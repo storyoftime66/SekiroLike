@@ -10,10 +10,29 @@ public class SekiroLike : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "GameplayAbilities", "EnhancedInput"
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"GameplayAbilities",
+			"EnhancedInput",
+			"GameplayTags",
+			"Json",
+			"JsonUtilities",
+			"UMG"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayAbilities", "EnhancedInput" });
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"GameplayAbilities",
+			"EnhancedInput",
+			"GameplayTags",
+			"GameplayTasks",
+			"Json",
+			"JsonUtilities",
+			"DidItHit",
+			"UMG"
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

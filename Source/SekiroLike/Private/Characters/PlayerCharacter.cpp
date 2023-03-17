@@ -7,7 +7,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "Abilities/GameplayAbilityBase_ActiveAbility.h"
+#include "Abilities/SLAbilityTypes.h"
 #include "Camera/CameraComponent.h"
+#include "Characters/Components/PlayerFocusComp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,7 +24,7 @@ APlayerCharacter::APlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 组件创建
+	// 跟随弹簧臂和摄像机组件
 	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	FollowSpringArm->SetupAttachment(RootComponent);
 	FollowSpringArm->TargetArmLength = 400.0f;
@@ -31,20 +34,10 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(FollowSpringArm);
 
-	// 输入操作，用于绑定
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_MoveObj(TEXT("/Game/SekiroLike/Blueprints/Input/IA_Move"));
-	IA_Move = IA_MoveObj.Object;
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_LookObj(TEXT("/Game/SekiroLike/Blueprints/Input/IA_Look"));
-	IA_Look = IA_LookObj.Object;
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_AttackObj(TEXT("/Game/SekiroLike/Blueprints/Input/IA_Attack"));
-	IA_Attack = IA_AttackObj.Object;
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_BlockObj(TEXT("/Game/SekiroLike/Blueprints/Input/IA_Block"));
-	IA_Block = IA_BlockObj.Object;
-	static ConstructorHelpers::FObjectFinder<UInputAction> IA_FocusObj(TEXT("/Game/SekiroLike/Blueprints/Input/IA_Focus"));
-	IA_Focus = IA_FocusObj.Object;
+	// 锁定组件
+	FocusComp = CreateDefaultSubobject<UPlayerFocusComp>(TEXT("FocusComp"));
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> DefaultMCObj(TEXT("/Game/SekiroLike/Blueprints/Input/MC_PlayerDefault"));
-	DefaultMC = DefaultMCObj.Object;
+	SetGenericTeamId(1);
 }
 
 // Called when the game starts or when spawned
@@ -67,9 +60,24 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	static FRotator RightRot(0.0f, 90.0f, 0.0f);
 
+	// TODO
+	static const FGameplayTag BackswingTag = SLAbilityTypes::GetAbilityStageTag(EAbilityStage::Backswing);
+
+	// 移动输入取消技能后摇
+	if (Value.GetMagnitudeSq() > 0.0f and ASC and ASC->HasMatchingGameplayTag(BackswingTag))
+	{
+		UGameplayAbilityBase_ActiveAbility* ActiveAbility = Cast<UGameplayAbilityBase_ActiveAbility>(ASC->GetAnimatingAbility());
+		ASC->CurrentMontageStop();
+		ASC->RemoveLooseGameplayTag(BackswingTag);
+		if (ActiveAbility and ActiveAbility->IsActive())
+		{
+			ActiveAbility->EndAbilityActively();
+		}
+	}
+
 	MovementInput.X = Value[0];
 	MovementInput.Y = Value[1];
-	
+
 	if (Value.GetMagnitudeSq() > 0.0f)
 	{
 		const FVector ControlForward = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).Vector();
@@ -80,95 +88,46 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
 {
-	if (Value.GetMagnitudeSq() > 0.0f and !IsValid(FocusedEnemy))
+	if (Value.GetMagnitudeSq() > 0.0f)
 	{
 		AddControllerPitchInput(-Value[1]);
 		AddControllerYawInput(Value[0]);
 	}
 }
 
-void APlayerCharacter::Attack()
+void APlayerCharacter::Debug(const FInputActionValue& Value)
 {
+	UE_LOG(LogTemp, Display, TEXT("[Debug] %f"), Value.GetMagnitude());
 }
 
-void APlayerCharacter::Block()
-{
-}
-
-void APlayerCharacter::Focus()
-{
-	check(GetController());
-
-	if (IsValid(FocusedEnemy))
-	{
-		FocusedEnemy = nullptr;
-	}
-	else
-	{
-		// 检测并获取可以锁定的敌人
-		check(GetOwner());
-		check(GetWorld());
-
-		FVector CamLoc;
-		FRotator CamRot;
-		GetController()->GetPlayerViewPoint(CamLoc, CamRot);
-		// TODO: 锁定范围是否需要写死
-		const FVector Start = CamLoc + CamRot.Vector() * 400.0f;
-		const FVector End = Start + CamRot.Vector() * 600.0f;
-
-		// 下面代码修改自 UKismetSystemLibrary::SphereTraceSingle
-		FHitResult OutHit;
-		FCollisionQueryParams Params(FName("PlayerFocusAction"), SCENE_QUERY_STAT_ONLY(Focus), true);
-		Params.bReturnPhysicalMaterial = false;
-		Params.bReturnFaceIndex = false;
-		Params.AddIgnoredActor(this);
-
-		bool bHit = GetWorld()->SweepSingleByObjectType(
-			OutHit, Start, End, FQuat::Identity, FCollisionObjectQueryParams(ECC_Pawn),
-			FCollisionShape::MakeSphere(300.0f), Params);
-		if (bHit)
-		{
-			FocusedEnemy = Cast<ACharacter>(OutHit.GetActor());
-		}
-	}
-}
-
-// Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	APlayerController* PC = GetController<APlayerController>();
+}
 
-	if (IsValid(FocusedEnemy))
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (FocusComp)
 	{
-		// 旋转角色
-		GetCharacterMovement()->bOrientRotationToMovement = false;
-		const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), FocusedEnemy->GetActorLocation());
-		const FRotator ActorTargetRot(0.0f, LookAtRot.Yaw, 0.0f);
-		SetActorRotation(FMath::RInterpTo(GetActorRotation(), ActorTargetRot, DeltaTime, 10.0f));
-		// 旋转视角
-		if (PC)
-		{
-			const FRotator ControlTargetRot(-15.0f, LookAtRot.Yaw, 0.0f);
-			PC->SetControlRotation(FMath::RInterpTo(PC->GetControlRotation(), ControlTargetRot, DeltaTime, 4.0f));
-		}
-	}
-	else
-	{
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		FocusComp->InitializeFocusComp(Cast<APlayerController>(NewController), GetCharacterMovement());
 	}
 }
 
 void APlayerCharacter::UnPossessed()
 {
 	AController* OldController = Controller;
+
+	// 移除默认IMC
 	if (const APlayerController* PC = Cast<APlayerController>(OldController))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
-			Subsystem->RemoveMappingContext(DefaultMC);
+			Subsystem->RemoveMappingContext(IMC_Default);
 		}
 	}
+
 	Super::UnPossessed();
 }
 
@@ -176,9 +135,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	ApplyInputMappingContext(DefaultMC, 0);
+	// 添加操作-按键映射
+	ApplyInputMappingContext(IMC_Default, 0);
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	// 绑定操作方法
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EnhancedInputComponent)
 	{
 		if (IA_Move)
 		{
@@ -189,18 +151,66 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		}
-		if (IA_Attack)
+		// if (IA_Attack)
+		// {
+		// 	EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
+		// }
+		// if (IA_ChargeAttack)
+		// {
+		// 	EnhancedInputComponent->BindAction(IA_ChargeAttack, ETriggerEvent::Triggered, this, &APlayerCharacter::ChargeAttack);
+		// }
+		// if (IA_Block)
+		// {
+		// 	EnhancedInputComponent->BindAction(IA_Block, ETriggerEvent::Started, this, &APlayerCharacter::Block);
+		// }
+		// if (IA_Dodge)
+		// {
+		// 	EnhancedInputComponent->BindAction(IA_Dodge, ETriggerEvent::Started, this, &APlayerCharacter::Dodge);
+		// }
+
+		// 锁定功能
+		if (FocusComp)
 		{
-			EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
+			if (FocusComp->GetFocusAction())
+			{
+				EnhancedInputComponent->BindAction(FocusComp->GetFocusAction(), ETriggerEvent::Started, FocusComp, &UPlayerFocusComp::Focus);
+			}
+			if (FocusComp->GetSwitchTargetAction())
+			{
+				EnhancedInputComponent->BindAction(FocusComp->GetSwitchTargetAction(), ETriggerEvent::Started, FocusComp, &UPlayerFocusComp::SwitchTarget);
+			}
 		}
-		if (IA_Block)
+	}
+
+	// 绑定技能和输入操作
+	if (EnhancedInputComponent and ASC)
+	{
+		for (const auto AbilityClass : InitialActiveAbilities)
 		{
-			EnhancedInputComponent->BindAction(IA_Block, ETriggerEvent::Started, this, &APlayerCharacter::Block);
+			UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(AbilityClass, ASC, EnhancedInputComponent);
 		}
-		if (IA_Focus)
-		{
-			EnhancedInputComponent->BindAction(IA_Focus, ETriggerEvent::Started, this, &APlayerCharacter::Focus);
-		}
+	}
+}
+
+FVector APlayerCharacter::GetWorldMovementIntent() const
+{
+	if (MovementInput.IsNearlyZero(0.0001f))
+	{
+		return FVector::ZeroVector;
+	}
+	FVector ControlDir(GetControlRotation().Vector());
+	ControlDir.Z = 0;
+	
+	FVector MovementInputVec(MovementInput);
+	MovementInputVec.Z = 0;
+	return UKismetMathLibrary::MakeRotFromX(MovementInputVec).RotateVector(ControlDir).GetSafeNormal2D();
+}
+
+void APlayerCharacter::DebugAddGameplayTag(FGameplayTag DebugTag)
+{
+	if (ASC)
+	{
+		ASC->AddLooseGameplayTag(DebugTag);
 	}
 }
 
@@ -221,4 +231,8 @@ void APlayerCharacter::ApplyInputMappingContext(const UInputMappingContext* NewM
 			Subsystem->AddMappingContext(NewMappingContext, Priority);
 		}
 	}
+}
+
+void APlayerCharacter::RemapAbilityToInputAction()
+{
 }

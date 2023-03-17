@@ -3,13 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Actor.h"
 #include "SLPlayerController.generated.h"
 
 UCLASS()
-class SEKIROLIKE_API ASLPlayerController : public APlayerController
+class SEKIROLIKE_API ASLPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
+	
+protected:
+	FGenericTeamId TeamID = 1;
 
 public:
 	// Sets default values for this actor's properties
@@ -22,4 +26,9 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//~ IGenericTeamAgentInterface
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };

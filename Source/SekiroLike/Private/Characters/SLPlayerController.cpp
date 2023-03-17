@@ -15,12 +15,26 @@ ASLPlayerController::ASLPlayerController()
 void ASLPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ASLPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ASLPlayerController::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamID = NewTeamID;
+}
+
+FGenericTeamId ASLPlayerController::GetGenericTeamId() const
+{
+	return TeamID;
+}
+
+ETeamAttitude::Type ASLPlayerController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	return IGenericTeamAgentInterface::GetTeamAttitudeTowards(Other);
 }
 
