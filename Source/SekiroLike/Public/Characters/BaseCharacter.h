@@ -36,7 +36,8 @@ class SEKIROLIKE_API ABaseCharacter :
 	////////////////////////////////////////////////////////////
 protected:
 	/** 技能组件和属性集 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
+	// UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USLAbilitySystemComponent* ASC;
 	UPROPERTY()
 	UCharAttributeSet* CharAS;

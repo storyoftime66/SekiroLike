@@ -8,17 +8,53 @@
 
 
 /**
- * 稍微修改功能的技能组件。
+ * 稍微修改功能的技能组件，方便玩家和AI使用。
  * TODO: 指令队列，但还没有确定好具体需求
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SEKIROLIKE_API USLAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+	
+	/////////////////////////////////////////////
+	/// AI相关
+	/////////////////////////////////////////////
+	
+	/** 自助查询的技能状态
+	 *  从左往右第一位状态为是否已结束，第二位状态为是否已取消 */
+	TMap<TSubclassOf<UGameplayAbility>, uint8> SelfServiceQueryAbilityStates;
+public:
+	/** 技能是否已经结束 */
+	bool IsAbilityEnded(TSubclassOf<UGameplayAbility> AbilityClass) const
+	{
+		const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
+		return Result != nullptr ? (*Result) & 0b00000001 : false;
+	}
+	/** 技能是否已取消 */
+	bool IsAbilityCancelled(TSubclassOf<UGameplayAbility> AbilityClass) const
+	{
+		const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
+		return Result != nullptr ? (*Result) & 0b00000010 : false;
+	}
+
+	/** 添加到查询列表 */
+	void AddSelfServiceQueryAbility(TSubclassOf<UGameplayAbility> AbilityClass)
+	{
+		if (IsValid(AbilityClass))
+		{
+			SelfServiceQueryAbilityStates.Add(TPair<TSubclassOf<UGameplayAbility>, uint8>(AbilityClass, 0x0));
+		}
+	}
+
+	/** 从查询列表移除 */
+	void RemoveSelfServiceQueryAbility(TSubclassOf<UGameplayAbility> AbilityClass)
+	{
+		SelfServiceQueryAbilityStates.Remove(AbilityClass);
+	}
 
 protected:
 	/////////////////////////////////////////////
-	/// 输入相关
+	/// 玩家输入相关
 	/////////////////////////////////////////////
 	/** 确认选择目标的输入ID
 	 *  - 依赖ActiveAbility，需要ASC被赋予了与该ID有相同ID的ActiveAbility才可触发
@@ -33,7 +69,7 @@ protected:
 
 protected:
 	/////////////////////////////////////////////
-	/// 指令队列
+	/// 玩家指令队列
 	///	- 暂时还不知道长度大于1的指令队列有什么用
 	/////////////////////////////////////////////
 

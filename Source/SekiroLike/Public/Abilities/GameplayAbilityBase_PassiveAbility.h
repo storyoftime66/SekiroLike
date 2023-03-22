@@ -7,7 +7,7 @@
 #include "GameplayAbilityBase_PassiveAbility.generated.h"
 
 /**
- * 被动技能基类。
+ * 被动技能基类，玩家和敌人通用。
  *	- 被动技能包括受击硬直、受击倒地、被弹反。
  *	- 被动技能通常会打断大部分主动技能。
  *	- 通常由事件触发。

@@ -25,7 +25,7 @@ class SEKIROLIKE_API APlayerCharacter : public ABaseCharacter
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta=(AllowPrivateAccess="true"))
 	UCameraComponent* FollowCamera;
 	/** 锁定组件 */
-	UPROPERTY(VisibleAnywhere, Category="SekiroLike|Components", BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UPlayerFocusComp* FocusComp;
 
 protected:

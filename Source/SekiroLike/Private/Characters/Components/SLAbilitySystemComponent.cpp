@@ -58,6 +58,24 @@ void USLAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 		}
 	}
 
+	// 更新 SelfServiceQueryAbilityStates
+	if (Ability != nullptr)
+	{
+		TSubclassOf<UGameplayAbility> AbilityClass = Ability->GetClass();
+		uint8* Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
+		if (Result != nullptr)
+		{
+			if (bWasCancelled)
+			{
+				*Result |= 0b00000010;
+			}
+			else
+			{
+				*Result |= 0b00000001;
+			}
+		}
+	}
+
 	Super::NotifyAbilityEnded(Handle, Ability, bWasCancelled);
 }
 
