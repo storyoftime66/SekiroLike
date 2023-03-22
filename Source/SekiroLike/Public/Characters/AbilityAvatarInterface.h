@@ -44,6 +44,7 @@ public:
 	}
 
 	/** 清空角色技能阶段tag */
+	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
 	virtual void ClearAbilityStage()
 	{
 	}
@@ -61,14 +62,18 @@ public:
 
 	/** 设置当前姿势类型 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
-	virtual void SetPostureType(EPostureType NewPostureType) {}
+	virtual void SetPostureType(EPostureType NewPostureType)
+	{
+	}
 
-	/** 获取物理动画组件 */
+	/** 获取物理动画组件，暂未使用 */
 	virtual UPhysicalAnimationComponent* GetPhysicalAnimationComponent() const { return nullptr; }
-	
+
 	/** 对受击作出反应（播放物理动画） */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
-	virtual void ReactToHit(FName BoneName, FVector HitImpulse) {}
+	virtual void ReactToHit(FName BoneName, FVector HitImpulse)
+	{
+	}
 };
 
 

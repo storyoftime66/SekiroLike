@@ -16,11 +16,12 @@ UCLASS()
 class SEKIROLIKE_API UGameplayAbilityBase_PassiveAbility : public UGameplayAbilityBase
 {
 	GENERATED_BODY()
+
 public:
 	/** 在技能赋予时执行一次，通常用于持久型的技能。 */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
 	bool bActivateOnce = false;
-	
+
 public:
 	UGameplayAbilityBase_PassiveAbility();
 };

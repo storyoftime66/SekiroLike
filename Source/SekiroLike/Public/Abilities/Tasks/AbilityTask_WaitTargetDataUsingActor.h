@@ -17,12 +17,18 @@ class SEKIROLIKE_API UAbilityTask_WaitTargetDataUsingActor : public UAbilityTask
 {
 	GENERATED_BODY()
 
-public:
+protected:
+	/** 确认类型，默认找到由TargetActor确定确认时机（Custom） */
+	EGameplayTargetingConfirmation::Type ConfirmationType;
 
+	/** 移除TargetActor绑定到输入上的委托 */
+	void RemoveTargetActorFromConfirmCancelInputs();
+
+public:
 	/** 使用的TargetActor */
 	UPROPERTY()
 	AGameplayAbilityTargetActor* TargetActor;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FWaitTargetDataUsingActorDelegate ValidData;
 
@@ -42,7 +48,8 @@ public:
 	static UAbilityTask_WaitTargetDataUsingActor* WaitTargetDataUsingActor(
 		UGameplayAbility* OwningAbility,
 		FName TaskInstanceName,
-		AGameplayAbilityTargetActor* InTargetActor);
+		AGameplayAbilityTargetActor* InTargetActor,
+		EGameplayTargetingConfirmation::Type InConfirmationType = EGameplayTargetingConfirmation::Custom);
 
 	virtual void Activate() override;
 	virtual void OnDestroy(bool bInOwnerFinished) override;

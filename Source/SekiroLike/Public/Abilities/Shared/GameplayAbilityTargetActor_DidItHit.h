@@ -11,6 +11,7 @@ class UDidItHitActorComponent;
 /**
  * DidItHit TargetActor。
  * - 实际上可以用普通的Actor来使用DidItHitComp。
+ * - 不需要玩家确认，也不会去绑定ASC的确认委托。
  */
 UCLASS(BlueprintType)
 class SEKIROLIKE_API AGameplayAbilityTargetActor_DidItHit : public AGameplayAbilityTargetActor
@@ -22,7 +23,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="SekiroLike|Ability")
 	UDidItHitActorComponent* DidItHitComp;
 
-	/** 是否正在检测目标 */
+	/** 是否正在检测目标，用于控制DidItHit组件。 */
 	UPROPERTY()
 	bool bIsTargeting = false;
 
@@ -35,7 +36,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	FGameplayAbilityTargetDataHandle MakeTargetData(FHitResult& HitResult);
-	
+
 	UFUNCTION()
 	void OnHitActorHandler(FHitResult HitResult);
 
@@ -46,6 +47,6 @@ public:
 	virtual bool IsConfirmTargetingAllowed() override;
 
 	/** 工具方法，创建TargetActor */
-	UFUNCTION(BlueprintCallable, Category="SekiroLike|Ability")
+	UFUNCTION(BlueprintCallable, Category="SekiroLike|TargetData")
 	static AGameplayAbilityTargetActor_DidItHit* MakeTargetActor_DidItHit(ACharacter* AbilityAvatar);
 };

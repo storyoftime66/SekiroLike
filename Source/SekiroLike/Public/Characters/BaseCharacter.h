@@ -12,6 +12,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "MovementAgentInterface.h"
 #include "GameFramework/Character.h"
+
 #include "BaseCharacter.generated.h"
 
 class UGameplayEffect;
@@ -35,16 +36,17 @@ class SEKIROLIKE_API ABaseCharacter :
 	////////////////////////////////////////////////////////////
 protected:
 	/** 技能组件和属性集 */
-	UPROPERTY(BlueprintReadOnly, Category="SekiroLike|Ability")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	USLAbilitySystemComponent* ASC;
 	UPROPERTY()
 	UCharAttributeSet* CharAS;
 	/** 初始技能组 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities;
 	/** 初始效果（包括初始属性） */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
+	
 	/** 初始激活的技能的SpecHandles */
 	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> PersistentSpecHandles;
@@ -92,7 +94,7 @@ protected:
 
 	/** 当前姿势类型，分为左手姿势和右手姿势 */
 	EPostureType PostureType = EPostureType::None;
-	
+
 
 	/** 物理动画混合权重时间轴函数 */
 	UFUNCTION()

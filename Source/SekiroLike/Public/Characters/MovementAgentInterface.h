@@ -32,24 +32,26 @@ class SEKIROLIKE_API IMovementAgentInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
 	//////////////////////
 	/// 角色相关
-	
+
 	/** 设置行走模式 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|MovementAgent")
-	virtual void SetWalkMode(EWalkMode NewWalkMode);
+	virtual void SetWalkMode(EWalkMode NewWalkMode)
+	{
+	}
 
 	/** 获取当前的行走模式 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|MovementAgent")
-	virtual EWalkMode GetWalkMode() const;
-	
+	virtual EWalkMode GetWalkMode() const { return EWalkMode::None; }
+
 	//////////////////////
 	/// 动画相关
 
 	/** 获取世界空间中的移动方向(单位向量)，通常Z = 0.0f */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|MovementAgent")
 	virtual FVector GetWorldMovementIntent() const { return FVector::ZeroVector; }
+
 	/** 获取本地空间中的移动方向(单位向量)，通常Z = 0.0f */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|MovementAgent")
 	virtual FVector GetLocalMovementIntent() const { return FVector::ZeroVector; }

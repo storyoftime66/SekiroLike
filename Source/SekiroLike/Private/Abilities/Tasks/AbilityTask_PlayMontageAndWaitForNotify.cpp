@@ -8,7 +8,7 @@
 void UAbilityTask_PlayMontageAndWaitForNotify::Activate()
 {
 	check(AnimInstance);
-	
+
 	if (Ability == nullptr)
 	{
 		return;

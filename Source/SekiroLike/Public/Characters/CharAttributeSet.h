@@ -29,17 +29,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCharAttributeSet, MaxHealth)
-	
+
 	/** 血量 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCharAttributeSet, Health)
-	
+
 	/** 躯干值上限 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData MaxBalance;
 	ATTRIBUTE_ACCESSORS(UCharAttributeSet, MaxBalance)
-	
+
 	/** 躯干值 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData Balance;
@@ -49,7 +49,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData AttackDamage;
 	ATTRIBUTE_ACCESSORS(UCharAttributeSet, AttackDamage)
-	
+
 	/** 防御力 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Attributes")
 	FGameplayAttributeData Defence;

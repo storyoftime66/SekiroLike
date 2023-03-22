@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectEC_Damage.h"
-#include "UObject/Object.h"
 #include "GameplayEffectEC_PlayerDamage.generated.h"
 
 /**
@@ -15,6 +14,7 @@ UCLASS(BlueprintType)
 class SEKIROLIKE_API UGameplayEffectEC_PlayerDamage : public UGameplayEffectEC_Damage
 {
 	GENERATED_BODY()
+
 protected:
 	virtual float GetFinalHealthDamage(float DamageMagnification, float SourceAttackDamage, float TargetDefence, float TargetMaxHealth) const override;
 };

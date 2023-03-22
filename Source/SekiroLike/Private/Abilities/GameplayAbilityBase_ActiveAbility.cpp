@@ -33,6 +33,7 @@ void UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(TSubclassOf<UGameplayAbil
 		return;
 	}
 
+	// 赋予技能
 	const int32 AbilityLevel = 1;
 	auto AbilityDef = AbilityClass.GetDefaultObject();
 	check(AbilityDef);
@@ -51,6 +52,7 @@ void UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(TSubclassOf<UGameplayAbil
 		return;
 	}
 
+	// 绑定技能释放到输入
 	auto TriggerEvent = AbilityDef->TriggerEvent;
 	if (TriggerEvent == ETriggerEvent::Started or TriggerEvent == ETriggerEvent::Triggered)
 	{

@@ -18,9 +18,10 @@ UCLASS()
 class SEKIROLIKE_API UGameplayAbility_MontageMultidirection : public UGameplayAbilityBase_ActiveAbility
 {
 	GENERATED_BODY()
+
 public:
 	UGameplayAbility_MontageMultidirection();
-	
+
 protected:
 	/** 是否仅使用前、后、左、右四个方向 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
@@ -28,7 +29,7 @@ protected:
 
 #pragma region ANIMATIONS
 	// Note: 写成这样而不写成数组是为了配的时候方便一些
-	
+
 	/** 向前的动画 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	UAnimMontage* Montage_F;
@@ -57,9 +58,7 @@ protected:
 
 	//~ GameplayAbilityBase
 	virtual UAnimMontage* GetAbilityMontage_Implementation() override;
-	
+
 	//~ GameplayAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-
 };

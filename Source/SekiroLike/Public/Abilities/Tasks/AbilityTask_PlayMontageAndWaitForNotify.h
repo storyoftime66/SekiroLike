@@ -79,7 +79,7 @@ protected:
 	void NotifyBegin(FName InNotifyName, const FBranchingPointNotifyPayload& Payload);
 	UFUNCTION()
 	void NotifyEnd(FName InNotifyName, const FBranchingPointNotifyPayload& Payload);
-	
+
 	/////////////////////////////////////////////
 	// 技能回调Handler
 	void AbilityCancelled();

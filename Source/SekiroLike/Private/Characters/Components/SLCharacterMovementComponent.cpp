@@ -20,6 +20,6 @@ float USLCharacterMovementComponent::SlideAlongSurface(const FVector& Delta, flo
 			}
 		}
 	}
-	
+
 	return Super::SlideAlongSurface(Delta, Time, Normal, Hit, bHandleImpact);
 }

@@ -233,6 +233,6 @@ void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
 			ReticleWidgetComp->SetDrawSize(FVector2D(128.0f, 128.0f));
 		}
 	}
-	
+
 	FocusedCharacter = NewCharacter;
 }

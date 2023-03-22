@@ -44,7 +44,7 @@ struct SLAbilityTypes
 			return AbilityStages[StageEnum];
 		}
 		return FGameplayTag::EmptyTag;
-		
+
 		// switch (StageEnum)
 		// {
 		// case EAbilityStage::Precast:
@@ -71,7 +71,7 @@ struct SLAbilityTypes
 			}
 		}
 	}
-	
+
 	static void ClearActiveStageTags(const AActor* Avatar)
 	{
 		if (Avatar and Avatar->Implements<UAbilitySystemInterface>())

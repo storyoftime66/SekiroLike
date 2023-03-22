@@ -3,4 +3,4 @@
 #include "SekiroLike.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, SekiroLike, "SekiroLike" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, SekiroLike, "SekiroLike");

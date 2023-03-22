@@ -151,22 +151,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		{
 			EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		}
-		// if (IA_Attack)
-		// {
-		// 	EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
-		// }
-		// if (IA_ChargeAttack)
-		// {
-		// 	EnhancedInputComponent->BindAction(IA_ChargeAttack, ETriggerEvent::Triggered, this, &APlayerCharacter::ChargeAttack);
-		// }
-		// if (IA_Block)
-		// {
-		// 	EnhancedInputComponent->BindAction(IA_Block, ETriggerEvent::Started, this, &APlayerCharacter::Block);
-		// }
-		// if (IA_Dodge)
-		// {
-		// 	EnhancedInputComponent->BindAction(IA_Dodge, ETriggerEvent::Started, this, &APlayerCharacter::Dodge);
-		// }
 
 		// 锁定功能
 		if (FocusComp)
@@ -200,7 +184,7 @@ FVector APlayerCharacter::GetWorldMovementIntent() const
 	}
 	FVector ControlDir(GetControlRotation().Vector());
 	ControlDir.Z = 0;
-	
+
 	FVector MovementInputVec(MovementInput);
 	MovementInputVec.Z = 0;
 	return UKismetMathLibrary::MakeRotFromX(MovementInputVec).RotateVector(ControlDir).GetSafeNormal2D();
@@ -235,4 +219,5 @@ void APlayerCharacter::ApplyInputMappingContext(const UInputMappingContext* NewM
 
 void APlayerCharacter::RemapAbilityToInputAction()
 {
+	// TODO
 }

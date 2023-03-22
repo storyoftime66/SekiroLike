@@ -36,15 +36,15 @@ protected:
 	/** 从Json文件中加载设置 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|Settings")
 	void LoadSettings(bool LoadDefaultSettings = false);
-	
+
 	/** 应用游戏设置 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|Settings")
 	void ApplySettings();
-	
+
 	/** 保存设置到Json文件 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|Settings")
 	void SaveSettings();
 
-	
-#pragma endregion 
+
+#pragma endregion
 };

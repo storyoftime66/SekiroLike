@@ -13,7 +13,8 @@ class UInputAction;
 /**
  * 主动技能基类。
  *	- 主动释放的技能包括攻击、格挡、闪避等技能。
- *	- 技能分为三个阶段，前摇、生效、后摇。
+ *	- 技能分为四个阶段，前摇、生效开始、生效结束、后摇。
+ *	- 绑定了输入的技能可以使用指令队列
  */
 UCLASS(Abstract)
 class SEKIROLIKE_API UGameplayAbilityBase_ActiveAbility : public UGameplayAbilityBase
@@ -21,6 +22,9 @@ class SEKIROLIKE_API UGameplayAbilityBase_ActiveAbility : public UGameplayAbilit
 	GENERATED_BODY()
 
 protected:
+	//////////////////////////////////////////
+	/// TargetActor
+	//////////////////////////////////////////
 	/** 技能可能会用到的TargetActor */
 	UPROPERTY(BlueprintReadWrite, Category="SekiroLike|Ability")
 	AGameplayAbilityTargetActor* TargetActor;
@@ -28,7 +32,7 @@ protected:
 	/** 技能可能会用到的TargetActor */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="SekiroLike|Ability")
 	AGameplayAbilityTargetActor* GetTargetActor();
-	
+
 public:
 #pragma region HELPER_FUNCTIONS
 	/** 主动结束技能 */
@@ -48,18 +52,21 @@ public:
 		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility);
 	}
 #pragma endregion
-	
+
 	/** 技能标签 */
 	static FGameplayTag ABILITY_TAG;
 
-	/////////////////////////////////
-	/// 绑定输入设置
+	//////////////////////////////////////////
+	/// 输入
+	//////////////////////////////////////////
 	/** 技能是否绑定到输入 */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Input")
 	bool bUseActionBinding = false;
+	
 	/** 主动技能对应的输入，需要使用ASC的InputRelease回调时才填写 */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Input", meta=(EditCondition="bUseActionBinding"))
 	UInputAction* InputAction;
+	
 	/** 技能输入id，需要使用ASC的InputRelease回调时才填写
 	 *  - 输入id与InputAction要求是一对一的关系，并且值不为INDEX_NONE时才视为有效。
 	 */

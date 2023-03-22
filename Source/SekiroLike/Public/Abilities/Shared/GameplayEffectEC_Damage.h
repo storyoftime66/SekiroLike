@@ -17,6 +17,7 @@ UCLASS(BlueprintType)
 class SEKIROLIKE_API UGameplayEffectEC_Damage : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
+
 protected:
 	/** 根据角色属性值计算最终生命伤害
 	 *  参数从左到右：技能倍率，攻击角色的攻击力，受击角色防御力，受击角色最大生命值 */

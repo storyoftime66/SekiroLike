@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
-#include "GameFramework/Actor.h"
+
 #include "SLPlayerController.generated.h"
 
 UCLASS()
 class SEKIROLIKE_API ASLPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
-	
+
 protected:
 	FGenericTeamId TeamID = 1;
 

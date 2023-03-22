@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
-#include "GameplayTagContainer.h"
 #include "PlayerCharacter.generated.h"
 
 class UPlayerFocusComp;
@@ -20,10 +19,10 @@ class SEKIROLIKE_API APlayerCharacter : public ABaseCharacter
 	GENERATED_BODY()
 
 	/** 跟随的弹簧臂 */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta=(AllowPrivateAccess="true"))
 	USpringArmComponent* FollowSpringArm;
 	/** 跟随的相机 */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta=(AllowPrivateAccess="true"))
 	UCameraComponent* FollowCamera;
 	/** 锁定组件 */
 	UPROPERTY(VisibleAnywhere, Category="SekiroLike|Components", BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
@@ -31,7 +30,7 @@ class SEKIROLIKE_API APlayerCharacter : public ABaseCharacter
 
 protected:
 	/** 初始主动技能组 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	TArray<TSubclassOf<UGameplayAbilityBase_ActiveAbility>> InitialActiveAbilities;
 
 	FVector MovementInput;
@@ -46,14 +45,6 @@ protected:
 	UInputAction* IA_Move;
 	UPROPERTY(EditDefaultsOnly, Category="SekiroLike|Input")
 	UInputAction* IA_Look;
-
-	////////////////////////////////////////
-	/// 部分动作对应的技能tag
-	// /** 攻击动作的技能tag */
-	// UPROPERTY(EditAnywhere, Category="SekiroLike|Input")
-	// FGameplayTag AbilityTag_Attack;
-	// /** 上一个使用的技能的tag */
-	// FGameplayTag LastAbilityTag;
 
 	////////////////////////////////////////
 	/// 输入动作的处理函数
@@ -86,7 +77,6 @@ public:
 	virtual void UnPossessed() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 
 	//~ IMovementAgentInterface
 	virtual FVector GetWorldMovementIntent() const override;

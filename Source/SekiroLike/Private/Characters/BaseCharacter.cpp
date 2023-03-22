@@ -50,7 +50,7 @@ void ABaseCharacter::ReactToHitFinished()
 	if (GetMesh())
 	{
 		GetMesh()->SetAllBodiesSimulatePhysics(false);
-		UE_LOG(LogTemp, Display, TEXT("ReactToHitFinished"));
+		// UE_LOG(LogTemp, Display, TEXT("ReactToHitFinished"));
 	}
 }
 
@@ -67,7 +67,7 @@ void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// 设置技能系统组件
+	// 初始化技能系统组件
 	if (ASC)
 	{
 		ASC->InitAbilityActorInfo(this, this);
@@ -97,7 +97,7 @@ void ABaseCharacter::PostInitializeComponents()
 		}
 	}
 
-	// 设置物理动画
+	// 初始化物理动画设置
 	if (GetMesh() and ReactToHitCurve)
 	{
 		ReactToHitTimeline = FTimeline();
@@ -114,8 +114,14 @@ void ABaseCharacter::PostInitializeComponents()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	ReactToHitTimeline.TickTimeline(DeltaTime);
+
+	// TODO: 状态有Bug，会导致ASC残留ActiveAbility的 BlockedTag
+	if (IsValid(ASC))
+	{
+		// if(ASC->GetAnimatingAbility() == nullptr and ASC->) {}
+	}
 }
 
 float ABaseCharacter::GetAheadFoot() const

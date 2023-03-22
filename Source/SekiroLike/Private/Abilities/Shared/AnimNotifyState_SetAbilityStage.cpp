@@ -31,6 +31,7 @@ void UAnimNotifyState_SetAbilityStage::NotifyBegin(USkeletalMeshComponent* MeshC
 		auto ASC = AbilityAvatar->GetAbilitySystemComponent();
 		if (IsValid(ASC))
 		{
+			// UE_LOG(LogTemp, Display, TEXT("%s"), *AbilityStageTag.ToString());
 			ASC->AddLooseGameplayTag(AbilityStageTag);
 			if (bNotifyActorAtBeginning)
 			{
@@ -44,6 +45,13 @@ void UAnimNotifyState_SetAbilityStage::NotifyBegin(USkeletalMeshComponent* MeshC
 
 void UAnimNotifyState_SetAbilityStage::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
+	Super::NotifyEnd(MeshComp, Animation);
+
+	if (!bRemoveTagAtEnding)
+	{
+		return;
+	}
+
 	if (const IAbilitySystemInterface* AbilityAvatar = Cast<IAbilitySystemInterface>(AvatarActor))
 	{
 		const auto ASC = AbilityAvatar->GetAbilitySystemComponent();
@@ -52,6 +60,4 @@ void UAnimNotifyState_SetAbilityStage::NotifyEnd(USkeletalMeshComponent* MeshCom
 			ASC->RemoveLooseGameplayTag(AbilityStageTag);
 		}
 	}
-	
-	Super::NotifyEnd(MeshComp, Animation);
 }

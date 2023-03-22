@@ -23,6 +23,9 @@ protected:
 	/** 在状态开始时是否通知Actor */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
 	bool bNotifyActorAtBeginning = true;
+	/** 在状态结束时是否移除tag */
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
+	bool bRemoveTagAtEnding = true;
 
 	/** 缓存的MeshComp的拥有者 */
 	UPROPERTY()

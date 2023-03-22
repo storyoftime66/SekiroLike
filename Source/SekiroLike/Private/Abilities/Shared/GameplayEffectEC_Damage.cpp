@@ -28,7 +28,7 @@ static const SLDamageStatics& DamageStatics()
 
 float UGameplayEffectEC_Damage::GetFinalHealthDamage(float DamageMagnification, float SourceAttackDamage, float TargetDefence, float TargetMaxHealth) const
 {
-	return (DamageMagnification * SourceAttackDamage + TargetMaxHealth * 0.1f) * 50.0f / (50.0f + TargetDefence);
+	return (DamageMagnification * SourceAttackDamage + TargetMaxHealth * 0.1f) * 50.0f / FMath::Max(50.0f + TargetDefence, 10.0f);
 }
 
 UGameplayEffectEC_Damage::UGameplayEffectEC_Damage()

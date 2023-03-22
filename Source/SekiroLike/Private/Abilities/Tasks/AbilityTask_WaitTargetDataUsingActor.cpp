@@ -2,7 +2,34 @@
 
 
 #include "Abilities/Tasks/AbilityTask_WaitTargetDataUsingActor.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
+
+void UAbilityTask_WaitTargetDataUsingActor::RemoveTargetActorFromConfirmCancelInputs()
+{
+	// Note: 从TargetActor::EndPlay中抄的
+	if (TargetActor and TargetActor->GenericDelegateBoundASC)
+	{
+		// We must remove ourselves from GenericLocalConfirmCallbacks/GenericLocalCancelCallbacks, since while these are bound they will inhibit any *other* abilities
+		// that are bound to the same key.
+
+		UAbilitySystemComponent* UnboundASC = nullptr;
+		const FGameplayAbilityActorInfo* Info = (TargetActor->OwningAbility ? TargetActor->OwningAbility->GetCurrentActorInfo() : nullptr);
+		if (Info && Info->IsLocallyControlled())
+		{
+			UAbilitySystemComponent* ASC = Info->AbilitySystemComponent.Get();
+			if (ASC)
+			{
+				ASC->GenericLocalConfirmCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::ConfirmTargeting);
+				ASC->GenericLocalCancelCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::CancelTargeting);
+
+				UnboundASC = ASC;
+			}
+		}
+
+		ensure(TargetActor->GenericDelegateBoundASC == UnboundASC); // Error checking that we have removed delegates from the same ASC we bound them to
+	}
+}
 
 void UAbilityTask_WaitTargetDataUsingActor::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& Data)
 {
@@ -21,10 +48,12 @@ void UAbilityTask_WaitTargetDataUsingActor::OnTargetDataCancelledCallback(const 
 UAbilityTask_WaitTargetDataUsingActor* UAbilityTask_WaitTargetDataUsingActor::WaitTargetDataUsingActor(
 	UGameplayAbility* OwningAbility,
 	FName TaskInstanceName,
-	AGameplayAbilityTargetActor* InTargetActor)
+	AGameplayAbilityTargetActor* InTargetActor,
+	EGameplayTargetingConfirmation::Type InConfirmationType/* = EGameplayTargetingConfirmation::Instant */)
 {
 	UAbilityTask_WaitTargetDataUsingActor* Task = NewAbilityTask<UAbilityTask_WaitTargetDataUsingActor>(OwningAbility, TaskInstanceName);
 	Task->TargetActor = InTargetActor;
+	Task->ConfirmationType = InConfirmationType;
 	return Task;
 }
 
@@ -42,7 +71,19 @@ void UAbilityTask_WaitTargetDataUsingActor::Activate()
 		CancelledDelegateHandle = TargetActor->CanceledDelegate.AddUObject(this, &UAbilityTask_WaitTargetDataUsingActor::OnTargetDataCancelledCallback);
 
 		TargetActor->StartTargeting(Ability);
-		
+
+		if (TargetActor->ShouldProduceTargetData())
+		{
+			if (ConfirmationType == EGameplayTargetingConfirmation::Instant)
+			{
+				TargetActor->ConfirmTargeting();
+			}
+			else if (ConfirmationType == EGameplayTargetingConfirmation::UserConfirmed)
+			{
+				TargetActor->BindToConfirmCancelInputs();
+			}
+		}
+
 		SetWaitingOnAvatar();
 	}
 	else
@@ -55,12 +96,20 @@ void UAbilityTask_WaitTargetDataUsingActor::OnDestroy(bool bInOwnerFinished)
 {
 	if (TargetActor)
 	{
-		TargetActor->ConfirmTargeting();
+		if (ConfirmationType == EGameplayTargetingConfirmation::Custom)
+		{
+			TargetActor->ConfirmTargeting();
+		}
 
-		// 移除委托
+		// 移除任务委托
 		TargetActor->TargetDataReadyDelegate.Remove(ReadyDelegateHandle);
 		TargetActor->CanceledDelegate.Remove(CancelledDelegateHandle);
+
+		if (ConfirmationType == EGameplayTargetingConfirmation::UserConfirmed)
+		{
+			RemoveTargetActorFromConfirmCancelInputs();
+		}
 	}
-	
+
 	Super::OnDestroy(bInOwnerFinished);
 }

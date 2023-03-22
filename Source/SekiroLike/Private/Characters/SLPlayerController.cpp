@@ -37,4 +37,3 @@ ETeamAttitude::Type ASLPlayerController::GetTeamAttitudeTowards(const AActor& Ot
 {
 	return IGenericTeamAgentInterface::GetTeamAttitudeTowards(Other);
 }
-
