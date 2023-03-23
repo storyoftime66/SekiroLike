@@ -220,8 +220,10 @@ void ABaseCharacter::SetWalkMode(EWalkMode NewWalkMode)
 		case Walk:
 			NewSpeed = WalkSpeed;
 			break;
+		case None:
+			NewSpeed = 0.0f;
+			break;
 		default:
-			// Note: 需不需要设为0？
 			break;
 		}
 		GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
