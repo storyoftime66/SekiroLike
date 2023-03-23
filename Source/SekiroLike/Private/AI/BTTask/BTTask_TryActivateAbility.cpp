@@ -64,12 +64,13 @@ void UBTTask_TryActivateAbility::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 {
 	FBTWaitAbilityEnded* MyMemory = reinterpret_cast<FBTWaitAbilityEnded*>(NodeMemory);
 
-	if (MyMemory and IsValid(MyMemory->ASC))
+	if (MyMemory and MyMemory->ASC.IsValid())
 	{
 		MyMemory->bAbilityCancelled = MyMemory->ASC->IsAbilityCancelled(AbilityClass);
 		if (MyMemory->bAbilityCancelled)
 		{
-			FinishLatentAbort(OwnerComp);
+			// FinishLatentAbort(OwnerComp);  // Note: 这句会导致行为树一直不结束执行这个节点，一直卡在这
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		}
 
 		MyMemory->bAbilityEnded = MyMemory->ASC->IsAbilityEnded(AbilityClass);
@@ -93,7 +94,7 @@ void UBTTask_TryActivateAbility::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 void UBTTask_TryActivateAbility::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	FBTWaitAbilityEnded* MyMemory = reinterpret_cast<FBTWaitAbilityEnded*>(NodeMemory);
-	if (MyMemory and IsValid(MyMemory->ASC))
+	if (MyMemory and MyMemory->ASC.IsValid())
 	{
 		MyMemory->ASC->RemoveSelfServiceQueryAbility(AbilityClass);
 	}

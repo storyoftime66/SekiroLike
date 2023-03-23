@@ -38,6 +38,7 @@ class SEKIROLIKE_API IAbilityAvatarInterface
 public:
 	///////////////////////////
 	/// 技能相关
+	///////////////////////////
 	/** 添加角色技能阶段tag（前摇、生效、后摇） */
 	virtual void AddAbilityStage(const FGameplayTag& AbilityStageTag)
 	{
@@ -51,6 +52,7 @@ public:
 
 	//////////////////
 	/// 动画相关
+	//////////////////
 	/** 获取角色移动时在前面的脚
 	 *  左脚在前时返回-1，双脚平行时返回0，右脚在前时返回1 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
@@ -74,6 +76,17 @@ public:
 	virtual void ReactToHit(FName BoneName, FVector HitImpulse)
 	{
 	}
+
+	///////////////////////////
+	/// 其他Gameplay逻辑
+	///////////////////////////
+	/** 告知角色已死亡
+	 *  @param Instigator 凶手 */
+	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
+	virtual void NotifyDied(AActor* Instigator) {}
+	/** 角色是否已死亡 */
+	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
+	virtual bool IsDead() { return false; }
 };
 
 

@@ -8,7 +8,7 @@
 void UAbilityTask_WaitTargetDataUsingActor::RemoveTargetActorFromConfirmCancelInputs()
 {
 	// Note: 从TargetActor::EndPlay中抄的
-	if (TargetActor and TargetActor->GenericDelegateBoundASC)
+	if (IsValid(TargetActor) and TargetActor->GenericDelegateBoundASC)
 	{
 		// We must remove ourselves from GenericLocalConfirmCallbacks/GenericLocalCancelCallbacks, since while these are bound they will inhibit any *other* abilities
 		// that are bound to the same key.
@@ -28,6 +28,9 @@ void UAbilityTask_WaitTargetDataUsingActor::RemoveTargetActorFromConfirmCancelIn
 		}
 
 		ensure(TargetActor->GenericDelegateBoundASC == UnboundASC); // Error checking that we have removed delegates from the same ASC we bound them to
+
+		// 由于TargetActor 在EndPlay的时候还会去解绑一次，所以在这里解绑后要先置空
+		TargetActor->GenericDelegateBoundASC = nullptr;
 	}
 }
 

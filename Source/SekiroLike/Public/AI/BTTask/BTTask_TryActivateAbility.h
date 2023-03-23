@@ -14,7 +14,7 @@ struct FBTWaitAbilityEnded
 	float RemainingWaitTime;
 	bool bAbilityEnded;
 	bool bAbilityCancelled;
-	USLAbilitySystemComponent* ASC;
+	TWeakObjectPtr<USLAbilitySystemComponent> ASC;
 };
 
 /**

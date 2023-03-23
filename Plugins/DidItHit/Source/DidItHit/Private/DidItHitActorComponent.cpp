@@ -147,6 +147,7 @@ void UDidItHitActorComponent::ToggleTraceCheck(bool NewCanTrace)
 			HitActors.Empty();
 			TempIgnoredActors.Append(IgnoredActors);
 		}
+		SetComponentTickEnabled(NewCanTrace);
 		bCanTrace = NewCanTrace;
 	}
 	else

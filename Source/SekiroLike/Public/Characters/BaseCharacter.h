@@ -31,12 +31,14 @@ class SEKIROLIKE_API ABaseCharacter :
 {
 	GENERATED_BODY()
 
+	/** TODO: 临时用于解决BlockTags问题的变量  */
+	float TimeAccumulation = 0.0f;
+
 	////////////////////////////////////////////////////////////
 	/// 技能系统
 	////////////////////////////////////////////////////////////
 protected:
 	/** 技能组件和属性集 */
-	// UPROPERTY()
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USLAbilitySystemComponent* ASC;
 	UPROPERTY()
@@ -47,7 +49,7 @@ protected:
 	/** 初始效果（包括初始属性） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SekiroLike|Ability")
 	TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
-	
+
 	/** 初始激活的技能的SpecHandles */
 	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> PersistentSpecHandles;
@@ -96,6 +98,8 @@ protected:
 	/** 当前姿势类型，分为左手姿势和右手姿势 */
 	EPostureType PostureType = EPostureType::None;
 
+	/** 角色是否已死亡 */
+	bool IsCharacterDead = false;
 
 	/** 物理动画混合权重时间轴函数 */
 	UFUNCTION()
@@ -113,17 +117,25 @@ public:
 	virtual EPostureType GetPostureType() const override { return PostureType; }
 	virtual void SetPostureType(EPostureType NewPostureType) override { PostureType = NewPostureType; }
 	virtual void ReactToHit(FName BoneName, FVector HitImpulse) override;
+	virtual void NotifyDied(AActor* InInstigator) override;
+	virtual bool IsDead() override { return IsCharacterDead; }
 
 protected:
-	virtual void PostInitializeComponents() override;
+	/** 善后工作 */
+	UFUNCTION(BlueprintNativeEvent, Category="SekiroLike|Character")
+	void Died(AActor* InInstigator);
+
+public:
+	//~ IGenericTeamAgentInterface
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 public:
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void Tick(float DeltaTime) override;
 
-	//~ IGenericTeamAgentInterface
-	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+protected:
+	virtual void PostInitializeComponents() override;
 };

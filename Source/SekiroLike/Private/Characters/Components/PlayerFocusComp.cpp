@@ -5,6 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Blueprint/UserWidget.h"
+#include "Characters/AbilityAvatarInterface.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -96,6 +97,17 @@ void UPlayerFocusComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			if (FVector::DistSquared(CompOwner->GetActorLocation(), FocusedCharacter->GetActorLocation()) > MaxDistanceSquare)
 			{
 				SetFocusedCharacter(nullptr);
+				return;
+			}
+
+			// 角色死亡解除锁定
+			if (auto AbilityAvatar = Cast<IAbilityAvatarInterface>(FocusedCharacter))
+			{
+				if (AbilityAvatar->IsDead())
+				{
+					SetFocusedCharacter(nullptr);
+					return;
+				}
 			}
 		}
 		else
@@ -214,15 +226,14 @@ void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
 {
 	if (IsValid(ReticleClass))
 	{
+		// 移除原来的reticle并添加新的reticle
 		if (IsValid(FocusedCharacter) and IsValid(ReticleWidgetComp))
 		{
-			// 移除原来的reticle
 			ReticleWidgetComp->DestroyComponent();
 			ReticleWidgetComp = nullptr;
 		}
 		if (IsValid(NewCharacter))
 		{
-			// 添加新的reticle
 			ReticleWidgetComp = NewObject<UWidgetComponent>(NewCharacter, UWidgetComponent::StaticClass());
 			ReticleWidgetComp->RegisterComponent();
 			ReticleWidgetComp->AttachToComponent(NewCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);

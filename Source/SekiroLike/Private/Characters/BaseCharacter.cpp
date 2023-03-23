@@ -8,6 +8,7 @@
 #include "Abilities/SLAbilityTypes.h"
 #include "Characters/CharAttributeSet.h"
 #include "Characters/Components/SLCharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -43,6 +44,12 @@ void ABaseCharacter::ReactToHit(FName BoneName, FVector HitImpulse)
 	GetMesh()->SetAllBodiesBelowSimulatePhysics(BoneName, true, true);
 	GetMesh()->AddImpulse(HitImpulse, BoneName);
 	ReactToHitTimeline.PlayFromStart();
+}
+
+void ABaseCharacter::NotifyDied(AActor* InInstigator)
+{
+	const FTimerDelegate TimerDelegate = FTimerDelegate::CreateUObject(this, &ABaseCharacter::Died, InInstigator);
+	GetWorldTimerManager().SetTimerForNextTick(TimerDelegate);
 }
 
 void ABaseCharacter::ReactToHitFinished()
@@ -110,17 +117,53 @@ void ABaseCharacter::PostInitializeComponents()
 	}
 }
 
+void ABaseCharacter::Died_Implementation(AActor* InInstigator)
+{
+	if (IsValid(GetCapsuleComponent()))
+	{
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	}
+
+	if (IsValid(GetMesh()))
+	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetMesh()->SetAllBodiesBelowSimulatePhysics(FName("root"), true);
+		GetMesh()->SetAllBodiesBelowPhysicsBlendWeight(FName("root"), 1.0f);
+	}
+
+	if (IsValid(ASC))
+	{
+		ASC->CancelAbilities();
+		ASC->ClearAllAbilities();
+	}
+
+	IsCharacterDead = true;
+}
+
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	static FGameplayTagContainer ActiveAbilityTags = FGameplayTagContainer(FGameplayTag::RequestGameplayTag("SekiroLike.Ability.ActiveAbility"));
+
 	ReactToHitTimeline.TickTimeline(DeltaTime);
 
-	// TODO: 状态有Bug，会导致ASC残留ActiveAbility的 BlockedTag
-	if (IsValid(ASC))
+	// TODO: 状态有Bug，会导致ASC残留ActiveAbility的 BlockedTag，但是还找不到原因
+	if (IsValid(ASC) and ASC->AreAbilityTagsBlocked(ActiveAbilityTags))
 	{
-		// if(ASC->GetAnimatingAbility() == nullptr and ASC->) {}
+		TimeAccumulation += DeltaTime;
+		if (TimeAccumulation > 2.0f)
+		{
+			TimeAccumulation = 0.0f;
+			ASC->UnBlockAbilitiesWithTags(ActiveAbilityTags);
+		}
+	}
+	else
+	{
+		TimeAccumulation = 0.0f;
 	}
 }
 
