@@ -9,7 +9,7 @@
 #include "AnimNotifyState_SetAbilityStage.generated.h"
 
 /**
- * 设置角色所处的技能阶段，结束时移除
+ * 设置角色所处的技能阶段tag，结束时移除
  */
 UCLASS()
 class SEKIROLIKE_API UAnimNotifyState_SetAbilityStage : public UAnimNotifyState

@@ -101,5 +101,9 @@ void UBTTask_TryActivateAbility::OnTaskFinished(UBehaviorTreeComponent& OwnerCom
 
 FString UBTTask_TryActivateAbility::GetStaticDescription() const
 {
+	if (IsValid(AbilityClass))
+	{
+		return AbilityClass->GetName();
+	}
 	return Super::GetStaticDescription();
 }

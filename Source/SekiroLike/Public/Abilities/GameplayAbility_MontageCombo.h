@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayAbilityBase_ActiveAbility.h"
+#include "GameplayAbility_AttackAbility.h"
 #include "GameplayAbility_MontageCombo.generated.h"
 
 /**
@@ -11,7 +12,7 @@
  * 适用于普通攻击这样的技能。
  */
 UCLASS()
-class SEKIROLIKE_API UGameplayAbility_MontageCombo : public UGameplayAbilityBase_ActiveAbility
+class SEKIROLIKE_API UGameplayAbility_MontageCombo : public UGameplayAbility_AttackAbility
 {
 	GENERATED_BODY()
 
@@ -25,6 +26,7 @@ protected:
 
 	/////////////////////////////////////////////
 	/// 自动连击
+	/////////////////////////////////////////////
 	/** 是否需要自动连击。
 	 *  在释放前一段攻击时再次尝试激活该技能时，会尝试自动连击，即当次技能结束后立刻再次激活技能。
 	 *  旨在优化连击技能的施放体验。 */
@@ -38,7 +40,7 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void ActivateForNextTick();
 
-	/** 当前连击段数 */
+	/** 当前连击段数，起始索引为0 */
 	UPROPERTY(BlueprintReadOnly, Category="SekiroLike|Ability")
 	int32 CurrentCombo = 0;
 
@@ -65,7 +67,9 @@ protected:
 	//~ UGameplayAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-	// Note: 由于连击技能在Precast阶段再次施放时不会触发NotifyAbilityFailed，需要在这里特殊处理
+
+	//	Note: 由于连击技能在Precast阶段再次施放时不会触发NotifyAbilityFailed，
+	//		  不能使用SLAbilitySystemComponent的连击机制，需要在这里特殊处理
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 };

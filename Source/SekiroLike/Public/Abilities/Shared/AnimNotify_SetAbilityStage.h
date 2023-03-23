@@ -7,7 +7,7 @@
 #include "AnimNotify_SetAbilityStage.generated.h"
 
 /**
- * 设置角色所处的技能阶段。（弃用：请使用AnimNotifyState_SetAbilityStage）
+ * 设置角色所处的技能阶段tag。（弃用：请使用AnimNotifyState_SetAbilityStage）
  */
 UCLASS()
 class SEKIROLIKE_API UAnimNotify_SetAbilityStage : public UAnimNotify

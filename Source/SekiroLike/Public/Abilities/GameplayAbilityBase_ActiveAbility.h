@@ -23,7 +23,7 @@ class SEKIROLIKE_API UGameplayAbilityBase_ActiveAbility : public UGameplayAbilit
 
 protected:
 	//////////////////////////////////////////
-	/// TargetActor
+	/// TargetActor相关
 	//////////////////////////////////////////
 	/** 技能可能会用到的TargetActor */
 	UPROPERTY(BlueprintReadWrite, Category="SekiroLike|Ability")
