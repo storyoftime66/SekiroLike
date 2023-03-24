@@ -7,7 +7,7 @@
 #include "GameplayAbilityBase.generated.h"
 
 /**
- * 技能基类，方便垫一些功能
+ * 技能基类，方便垫一些通用功能
  */
 UCLASS(Abstract)
 class SEKIROLIKE_API UGameplayAbilityBase : public UGameplayAbility

@@ -3,7 +3,6 @@
 
 #include "Characters/BaseCharacter.h"
 
-#include "AssetTypeCategories.h"
 #include "Abilities/GameplayAbilityBase_PassiveAbility.h"
 #include "Abilities/SLAbilityTypes.h"
 #include "Characters/CharAttributeSet.h"
