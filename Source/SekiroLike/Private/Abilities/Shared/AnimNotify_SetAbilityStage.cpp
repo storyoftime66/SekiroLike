@@ -24,7 +24,7 @@ void UAnimNotify_SetAbilityStage::Notify(USkeletalMeshComponent* MeshComp, UAnim
 			CurrentObject = CurrentObject->GetOuter();
 		}
 
-		if (Actor and Actor->Implements<UAbilityAvatarInterface>())
+		if (Actor && Actor->Implements<UAbilityAvatarInterface>())
 		{
 			IAbilityAvatarInterface* AbilityAvatar = CastChecked<IAbilityAvatarInterface>(Actor);
 			AbilityAvatar->ClearAbilityStage();

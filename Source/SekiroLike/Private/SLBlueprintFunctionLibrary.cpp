@@ -50,7 +50,7 @@ void USLBlueprintFunctionLibrary::GetEffectSpecDynamicAssetTagsFromHandle(FGamep
 
 FGameplayAbilitySpecHandle USLBlueprintFunctionLibrary::GiveAbilityAndActivateOnce(UAbilitySystemComponent* InASC, TSubclassOf<UGameplayAbility> AbilityClass, FGameplayEventData Payload)
 {
-	if (IsValid(InASC) and IsValid(AbilityClass))
+	if (IsValid(InASC) && IsValid(AbilityClass))
 	{
 		auto Spec = FGameplayAbilitySpec(AbilityClass);
 		return InASC->GiveAbilityAndActivateOnce(Spec, &Payload);

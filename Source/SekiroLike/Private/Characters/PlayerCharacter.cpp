@@ -64,12 +64,12 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	static const FGameplayTag BackswingTag = SLAbilityTypes::GetAbilityStageTag(EAbilityStage::Backswing);
 
 	// 移动输入取消技能后摇
-	if (Value.GetMagnitudeSq() > 0.0f and ASC and ASC->HasMatchingGameplayTag(BackswingTag))
+	if (Value.GetMagnitudeSq() > 0.0f && ASC && ASC->HasMatchingGameplayTag(BackswingTag))
 	{
 		UGameplayAbilityBase_ActiveAbility* ActiveAbility = Cast<UGameplayAbilityBase_ActiveAbility>(ASC->GetAnimatingAbility());
 		ASC->CurrentMontageStop();
 		ASC->RemoveLooseGameplayTag(BackswingTag);
-		if (ActiveAbility and ActiveAbility->IsActive())
+		if (ActiveAbility && ActiveAbility->IsActive())
 		{
 			ActiveAbility->EndAbilityActively();
 		}
@@ -167,7 +167,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 
 	// 绑定技能和输入操作
-	if (EnhancedInputComponent and ASC)
+	if (EnhancedInputComponent && ASC)
 	{
 		for (const auto AbilityClass : InitialActiveAbilities)
 		{

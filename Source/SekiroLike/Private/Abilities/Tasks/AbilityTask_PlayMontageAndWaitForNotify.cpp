@@ -75,7 +75,7 @@ void UAbilityTask_PlayMontageAndWaitForNotify::OnDestroy(bool bInOwnerFinished)
 	if (Ability)
 	{
 		Ability->OnGameplayAbilityCancelled.Remove(AbilityCancelledDelegate);
-		if (bInOwnerFinished and bStopWhenAbilityEnds)
+		if (bInOwnerFinished && bStopWhenAbilityEnds)
 		{
 			StopPlayingMontage();
 		}

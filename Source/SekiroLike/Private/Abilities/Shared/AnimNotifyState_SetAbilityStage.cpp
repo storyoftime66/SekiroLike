@@ -10,7 +10,7 @@ void UAnimNotifyState_SetAbilityStage::NotifyBegin(USkeletalMeshComponent* MeshC
 {
 	AbilityStageTag = SLAbilityTypes::GetAbilityStageTag(AbilityStage);
 
-	if (AvatarActor == nullptr and MeshComp)
+	if (AvatarActor == nullptr && MeshComp)
 	{
 		UObject* CurrentObject = MeshComp->GetOuter();
 		AActor* Actor = nullptr;

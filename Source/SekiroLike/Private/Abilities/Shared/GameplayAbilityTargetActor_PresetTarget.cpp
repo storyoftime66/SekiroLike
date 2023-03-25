@@ -31,7 +31,7 @@ AGameplayAbilityTargetActor_PresetTarget* AGameplayAbilityTargetActor_PresetTarg
 
 AGameplayAbilityTargetActor_PresetTarget* AGameplayAbilityTargetActor_PresetTarget::MakeTargetActor_PresetTarget_FromActors(TArray<AActor*> TargettingActors)
 {
-	if (TargettingActors.Num() == 0 or !IsValid(TargettingActors[0]))
+	if (TargettingActors.Num() == 0 || !IsValid(TargettingActors[0]))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TargetActor_PresetTarget spawned failed becauce of invalid WorldContext."));
 		return nullptr;

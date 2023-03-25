@@ -62,4 +62,4 @@ Esc |   退出游戏
 
 ## 战斗系统实现原理
 
-![战斗系统实现原理](images/%E6%88%98%E6%96%97%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86.jpg)
+![战斗系统实现原理](images/principle.jpg)

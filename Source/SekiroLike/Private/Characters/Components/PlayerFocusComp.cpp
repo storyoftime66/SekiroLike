@@ -20,7 +20,7 @@ UPlayerFocusComp::UPlayerFocusComp()
 
 void UPlayerFocusComp::InitializeFocusComp(APlayerController* InPC, UCharacterMovementComponent* InCharacterMovement)
 {
-	if (!IsValid(InPC) or !IsValid(InCharacterMovement))
+	if (!IsValid(InPC) || !IsValid(InCharacterMovement))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PC or CharacterMovement is invalid, the focuscomp is not initialized."))
 		return;
@@ -48,7 +48,7 @@ void UPlayerFocusComp::InitializeFocusComp(APlayerController* InPC, UCharacterMo
 	QueryParams.bReturnFaceIndex = false;
 	QueryParams.AddIgnoredActor(GetOwner());
 
-	bInitialized = IsValid(CompOwnerPC) and IsValid(CharacterMovement) and IsValid(CompOwner);
+	bInitialized = IsValid(CompOwnerPC) && IsValid(CharacterMovement) && IsValid(CompOwner);
 }
 
 bool UPlayerFocusComp::IsFocused() const
@@ -140,7 +140,7 @@ void UPlayerFocusComp::Focus()
 	else
 	{
 		// 检测并获取可以锁定的敌人
-		check(CompOwner and CompOwner->GetWorld());
+		check(CompOwner && CompOwner->GetWorld());
 
 		FVector CamLoc;
 		FRotator CamRot;
@@ -163,7 +163,7 @@ void UPlayerFocusComp::Focus()
 
 void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 {
-	check(CompOwner and CompOwner->GetWorld());
+	check(CompOwner && CompOwner->GetWorld());
 
 	if (!IsFocused())
 	{
@@ -193,7 +193,7 @@ void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 			for (auto& Hit : OutHits)
 			{
 				ACharacter* NewFocusedCharacter = Cast<ACharacter>(Hit.GetActor());
-				if (NewFocusedCharacter and NewFocusedCharacter != FocusedCharacter)
+				if (NewFocusedCharacter && NewFocusedCharacter != FocusedCharacter)
 				{
 					// 判断找到的新目标是否和旋转方向一致
 					FVector V1 = NewFocusedCharacter->GetActorLocation() - CompOwner->GetActorLocation();
@@ -214,7 +214,7 @@ void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 
 bool UPlayerFocusComp::SphereSweepMulti(TArray<FHitResult>& OutHits, FVector Start, FVector DirVector) const
 {
-	check(CompOwner and CompOwner->GetWorld());
+	check(CompOwner && CompOwner->GetWorld());
 	const bool bHit = GetWorld()->SweepMultiByObjectType(
 		OutHits, Start, Start + DirVector, FQuat::Identity, FCollisionObjectQueryParams(FocusObject.GetValue()),
 		FCollisionShape::MakeSphere(400.0f), QueryParams);
@@ -227,7 +227,7 @@ void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
 	if (IsValid(ReticleClass))
 	{
 		// 移除原来的reticle并添加新的reticle
-		if (IsValid(FocusedCharacter) and IsValid(ReticleWidgetComp))
+		if (IsValid(FocusedCharacter) && IsValid(ReticleWidgetComp))
 		{
 			ReticleWidgetComp->DestroyComponent();
 			ReticleWidgetComp = nullptr;

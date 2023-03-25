@@ -21,7 +21,7 @@ void UGameplayAbility_AttackAbility::MakeEventDataFromTargetData_Implementation(
 		if (TargetDataHandle.IsValid(i))
 		{
 			const FGameplayAbilityTargetData* TargetData = TargetDataHandle.Get(0);
-			if (TargetData->HasHitResult() and TargetData->GetHitResult() and TargetData->GetHitResult()->GetActor())
+			if (TargetData->HasHitResult() && TargetData->GetHitResult() && TargetData->GetHitResult()->GetActor())
 			{
 				TempEffectSpecHandle.AddHitResult(*TargetData->GetHitResult());
 				OutActor = TargetData->GetHitResult()->GetActor();

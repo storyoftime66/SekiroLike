@@ -29,44 +29,51 @@ enum class EAbilityStage: uint8
 
 struct SLAbilityTypes
 {
-	static TMap<EAbilityStage, FGameplayTag> AbilityStages;
-	static const FGameplayTagContainer AbilityStageTags;
-	static const FGameplayTagContainer ActiveStageTags;
+	// Note: 使用静态成员会在初始化的时候获取未分配内存的 UGameplayTagsManager，导致崩溃
+	// static TMap<EAbilityStage, FGameplayTag> AbilityStages;
+	// static FGameplayTagContainer AbilityStageTags;
+	// static FGameplayTagContainer ActiveStageTags;
 
-	static TMap<EAbilityStage, FGameplayTag> InitializeAbilityStages();
-	static TArray<FGameplayTag> InitializeAbilityStageTags();
-	static TArray<FGameplayTag> InitializeActiveStageTags();
-
-	static FGameplayTag GetAbilityStageTag(EAbilityStage StageEnum)
+	static FGameplayTag GetAbilityStageTag(const EAbilityStage StageEnum)
 	{
-		if (StageEnum != EAbilityStage::None and StageEnum < EAbilityStage::Max)
+		FGameplayTag ReturnTag;
+		switch (StageEnum)
 		{
-			return AbilityStages[StageEnum];
+		case EAbilityStage::Precast:
+			ReturnTag = STAGE_PRECAST;
+			break;
+		case EAbilityStage::ActiveStart:
+			ReturnTag = STAGE_ACTIVESTART;
+			break;
+		case EAbilityStage::ActiveEnd:
+			ReturnTag = STAGE_ACTIVEEND;
+			break;
+		case EAbilityStage::Backswing:
+			ReturnTag = STAGE_BACKSWING;
+			break;
+		default:
+			ReturnTag = FGameplayTag::EmptyTag;
+			break;
 		}
-		return FGameplayTag::EmptyTag;
-
-		// switch (StageEnum)
-		// {
-		// case EAbilityStage::Precast:
-		// 	return STAGE_PRECAST;
-		// case EAbilityStage::ActiveStart:
-		// 	return STAGE_ACTIVESTART;
-		// case EAbilityStage::ActiveEnd:
-		// 	return STAGE_ACTIVEEND;
-		// case EAbilityStage::Backswing:
-		// 	return STAGE_BACKSWING;
-		// default:
-		// 	return FGameplayTag::EmptyTag;
-		// }
+		return ReturnTag;
 	}
 
 	static void ClearAllStageTags(const AActor* Avatar)
 	{
-		if (Avatar and Avatar->Implements<UAbilitySystemInterface>())
+		static FGameplayTagContainer AbilityStageTags;
+		
+		if (Avatar && Avatar->Implements<UAbilitySystemInterface>())
 		{
 			const auto ASC = Cast<IAbilitySystemInterface>(Avatar)->GetAbilitySystemComponent();
 			if (ASC)
 			{
+				if (AbilityStageTags.Num() == 0)
+				{
+					AbilityStageTags.AddTag(STAGE_PRECAST);
+					AbilityStageTags.AddTag(STAGE_ACTIVESTART);
+					AbilityStageTags.AddTag(STAGE_ACTIVEEND);
+					AbilityStageTags.AddTag(STAGE_BACKSWING);
+				}
 				ASC->RemoveLooseGameplayTags(AbilityStageTags);
 			}
 		}
@@ -74,11 +81,18 @@ struct SLAbilityTypes
 
 	static void ClearActiveStageTags(const AActor* Avatar)
 	{
-		if (Avatar and Avatar->Implements<UAbilitySystemInterface>())
+		static FGameplayTagContainer ActiveStageTags;
+		
+		if (Avatar && Avatar->Implements<UAbilitySystemInterface>())
 		{
 			const auto ASC = Cast<IAbilitySystemInterface>(Avatar)->GetAbilitySystemComponent();
 			if (ASC)
 			{
+				if (ActiveStageTags.Num() == 0)
+				{
+					ActiveStageTags.AddTag(STAGE_ACTIVESTART);
+					ActiveStageTags.AddTag(STAGE_ACTIVEEND);
+				}
 				ASC->RemoveLooseGameplayTags(ActiveStageTags);
 			}
 		}

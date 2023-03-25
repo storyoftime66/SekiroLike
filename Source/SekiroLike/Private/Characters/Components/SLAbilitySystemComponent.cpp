@@ -35,26 +35,26 @@ void USLAbilitySystemComponent::NotifyAbilityFailed(const FGameplayAbilitySpecHa
 
 void USLAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, bool bWasCancelled)
 {
-	auto AvatarActor = GetAvatarActor();
+	const auto AbilityAvatar = GetAvatarActor();
 
 	// 指令队列逻辑
 	if (InputQueue.Num() != 0)
 	{
-		if (auto MovementAgent = Cast<IMovementAgentInterface>(AvatarActor))
+		if (auto MovementAgent = Cast<IMovementAgentInterface>(AbilityAvatar))
 		{
 			// 仅无移动输入时才自动释放队列中的技能
 			if (MovementAgent->GetWorldMovementIntent().IsNearlyZero())
 			{
-				AvatarActor->GetWorldTimerManager().SetTimerForNextTick(this, &USLAbilitySystemComponent::ConsumeInputQueue);
+				AbilityAvatar->GetWorldTimerManager().SetTimerForNextTick(this, &USLAbilitySystemComponent::ConsumeInputQueue);
 			}
 			else
 			{
 				InputQueue.Empty();
 			}
 		}
-		else if (AvatarActor)
+		else if (AbilityAvatar)
 		{
-			AvatarActor->GetWorldTimerManager().SetTimerForNextTick(this, &USLAbilitySystemComponent::ConsumeInputQueue);
+			AbilityAvatar->GetWorldTimerManager().SetTimerForNextTick(this, &USLAbilitySystemComponent::ConsumeInputQueue);
 		}
 	}
 

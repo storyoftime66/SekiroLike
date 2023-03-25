@@ -64,7 +64,7 @@ void UBTTask_TryActivateAbility::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 {
 	FBTWaitAbilityEnded* MyMemory = reinterpret_cast<FBTWaitAbilityEnded*>(NodeMemory);
 
-	if (MyMemory and MyMemory->ASC.IsValid())
+	if (MyMemory && MyMemory->ASC.IsValid())
 	{
 		MyMemory->bAbilityCancelled = MyMemory->ASC->IsAbilityCancelled(AbilityClass);
 		if (MyMemory->bAbilityCancelled)
@@ -94,7 +94,7 @@ void UBTTask_TryActivateAbility::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 void UBTTask_TryActivateAbility::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
 	FBTWaitAbilityEnded* MyMemory = reinterpret_cast<FBTWaitAbilityEnded*>(NodeMemory);
-	if (MyMemory and MyMemory->ASC.IsValid())
+	if (MyMemory && MyMemory->ASC.IsValid())
 	{
 		MyMemory->ASC->RemoveSelfServiceQueryAbility(AbilityClass);
 	}

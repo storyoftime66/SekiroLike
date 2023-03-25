@@ -95,7 +95,7 @@ void ABaseCharacter::PostInitializeComponents()
 
 			TSubclassOf<UGameplayAbilityBase_PassiveAbility> PassiveAbility;
 			PassiveAbility = Ability;
-			if (PassiveAbility and PassiveAbility.GetDefaultObject()->bActivateOnce)
+			if (PassiveAbility && PassiveAbility.GetDefaultObject()->bActivateOnce)
 			{
 				ASC->TryActivateAbility(SpecHandle);
 				PersistentSpecHandles.Add(SpecHandle);
@@ -104,7 +104,7 @@ void ABaseCharacter::PostInitializeComponents()
 	}
 
 	// 初始化物理动画设置
-	if (GetMesh() and ReactToHitCurve)
+	if (GetMesh() && ReactToHitCurve)
 	{
 		ReactToHitTimeline = FTimeline();
 		FOnTimelineFloat OnReactToHitTimeline;
@@ -151,7 +151,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	ReactToHitTimeline.TickTimeline(DeltaTime);
 
 	// TODO: 状态有Bug，会导致ASC残留ActiveAbility的 BlockedTag，但是还找不到原因
-	if (IsValid(ASC) and ASC->AreAbilityTagsBlocked(ActiveAbilityTags))
+	if (IsValid(ASC) && ASC->AreAbilityTagsBlocked(ActiveAbilityTags))
 	{
 		TimeAccumulation += DeltaTime;
 		if (TimeAccumulation > 2.0f)

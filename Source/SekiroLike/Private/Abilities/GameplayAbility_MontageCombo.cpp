@@ -11,7 +11,7 @@
 
 void UGameplayAbility_MontageCombo::OnAbilityFailed(const UGameplayAbility* Ability, const FGameplayTagContainer&)
 {
-	if (this == Ability and Ability->IsActive())
+	if (this == Ability && Ability->IsActive())
 	{
 		bAutoCombo = true;
 	}
@@ -38,14 +38,14 @@ void UGameplayAbility_MontageCombo::ResetCombo()
 
 void UGameplayAbility_MontageCombo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo) or ComboMontages.Num() == 0)
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo) || ComboMontages.Num() == 0)
 	{
 		return;
 	}
 
 	// 移除技能阶段Tag
 	AActor* Avatar = ActorInfo->AvatarActor.Get();
-	if (Avatar and Avatar->Implements<UAbilityAvatarInterface>())
+	if (Avatar && Avatar->Implements<UAbilityAvatarInterface>())
 	{
 		Cast<IAbilityAvatarInterface>(Avatar)->ClearAbilityStage();
 	}
@@ -99,7 +99,7 @@ void UGameplayAbility_MontageCombo::EndAbility(const FGameplayAbilitySpecHandle 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	// 触发自动连击
-	if (bAutoCombo and ActorInfo)
+	if (bAutoCombo && ActorInfo)
 	{
 		bAutoCombo = false;
 		const auto Avatar = ActorInfo->AvatarActor.Get();
@@ -118,7 +118,7 @@ void UGameplayAbility_MontageCombo::InputPressed(const FGameplayAbilitySpecHandl
 	LastTimePressed = NowTime;
 
 	// Note: 避免连续快速触发技能
-	if (IsActive() or NowTime - LastTimeActivated < 0.3f)
+	if (IsActive() || NowTime - LastTimeActivated < 0.3f)
 	{
 		bAutoCombo = true;
 	}

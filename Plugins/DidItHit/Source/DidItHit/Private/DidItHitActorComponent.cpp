@@ -27,7 +27,7 @@ void UDidItHitActorComponent::LineTraceAndHandleHit(const FVector& Start, const 
 	for (auto HitResult : HitResults)
 	{
 		AActor* HitActor = HitResult.GetActor();
-		if (IsValid(HitActor) and !HitActors.Contains(HitActor))
+		if (IsValid(HitActor) && !HitActors.Contains(HitActor))
 		{
 			HitActors.Emplace(HitActor);
 			TempIgnoredActors.Emplace(HitActor);
@@ -106,7 +106,7 @@ void UDidItHitActorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		}
 
 		// 更新插槽位置
-		if (bTraceSamePointAtDifferentTime or bTraceDifferentPointAtDifferentTime)
+		if (bTraceSamePointAtDifferentTime || bTraceDifferentPointAtDifferentTime)
 		{
 			UpdateLastKnownSocketLoc();
 		}
@@ -137,10 +137,10 @@ void UDidItHitActorComponent::AddIgnoredActors(TArray<AActor*> InIgnoredActor)
 
 void UDidItHitActorComponent::ToggleTraceCheck(bool NewCanTrace)
 {
-	if (IsValid(StaticMeshComp) and SocketNames.Num() > 0)
+	if (IsValid(StaticMeshComp) && SocketNames.Num() > 0)
 	{
 		// 在检测开始时清理上次的检测数据
-		if (bCanTrace == false and NewCanTrace == true)
+		if (bCanTrace == false && NewCanTrace == true)
 		{
 			LastKnownSocketLocation.Empty();
 			TempIgnoredActors.Empty();

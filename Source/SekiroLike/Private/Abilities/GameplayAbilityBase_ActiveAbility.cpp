@@ -6,8 +6,6 @@
 
 #include "AbilitySystemComponent.h"
 
-FGameplayTag UGameplayAbilityBase_ActiveAbility::ABILITY_TAG = FGameplayTag::RequestGameplayTag("SekiroLike.Ability.ActiveAbility");
-
 AGameplayAbilityTargetActor* UGameplayAbilityBase_ActiveAbility::GetTargetActor_Implementation()
 {
 	return TargetActor;
@@ -15,6 +13,8 @@ AGameplayAbilityTargetActor* UGameplayAbilityBase_ActiveAbility::GetTargetActor_
 
 UGameplayAbilityBase_ActiveAbility::UGameplayAbilityBase_ActiveAbility()
 {
+	const FGameplayTag ABILITY_TAG = FGameplayTag::RequestGameplayTag("SekiroLike.Ability.ActiveAbility");
+	
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	// 多个主动技能不能同时释放
@@ -28,7 +28,7 @@ UGameplayAbilityBase_ActiveAbility::UGameplayAbilityBase_ActiveAbility()
 
 void UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(TSubclassOf<UGameplayAbilityBase_ActiveAbility> AbilityClass, UAbilitySystemComponent* ASC, UEnhancedInputComponent* EnhancedInputComponent)
 {
-	if (!IsValid(AbilityClass) or !IsValid(ASC))
+	if (!IsValid(AbilityClass) || !IsValid(ASC))
 	{
 		return;
 	}
@@ -40,21 +40,21 @@ void UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(TSubclassOf<UGameplayAbil
 	const int32 AbilityInputID = AbilityDef->InputId;
 	auto SpecHandle = ASC->GiveAbility(FGameplayAbilitySpec(AbilityClass, AbilityLevel, AbilityInputID));
 
-	if (!IsValid(EnhancedInputComponent) or !AbilityDef->bUseActionBinding)
+	if (!IsValid(EnhancedInputComponent) || !AbilityDef->bUseActionBinding)
 	{
 		return;
 	}
 
 	auto IA_Ability = AbilityDef->InputAction;
 	auto InputID = AbilityDef->InputId;
-	if (IA_Ability == nullptr or IA_Ability->ValueType != EInputActionValueType::Boolean or AbilityDef->InputId == INDEX_NONE)
+	if (IA_Ability == nullptr || IA_Ability->ValueType != EInputActionValueType::Boolean || AbilityDef->InputId == INDEX_NONE)
 	{
 		return;
 	}
 
 	// 绑定技能释放到输入
 	auto TriggerEvent = AbilityDef->TriggerEvent;
-	if (TriggerEvent == ETriggerEvent::Started or TriggerEvent == ETriggerEvent::Triggered)
+	if (TriggerEvent == ETriggerEvent::Started || TriggerEvent == ETriggerEvent::Triggered)
 	{
 		EnhancedInputComponent->BindAction(IA_Ability, TriggerEvent, ASC, &UAbilitySystemComponent::AbilityLocalInputPressed, InputID);
 	}
