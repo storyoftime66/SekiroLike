@@ -1,8 +1,8 @@
 # SekiroLike
 
-## 基本介绍
-
 SekiroLike是一个仿照《只狼》战斗系统的动作游戏Demo。SekiroLike使用Unreal Engine 4.27制作，使用Gameplay Ability System插件实现主要功能。
+
+[项目地址](https://gitee.com/storyoftime66/SekiroLike)
 
 按键 | 操作
 ---|---
@@ -53,13 +53,24 @@ Esc |   退出游戏
 
 ### 其他功能
 
-锁定敌人，锁定时视角会一直朝向该敌人。
-  - 敌人死亡或距离过远时自动取消锁定。
-  - 滚动鼠标可以切换锁定目标。
+1. 锁定敌人，锁定时视角会一直朝向该敌人。
+   - 敌人死亡或距离过远时自动取消锁定。
+   - 滚动鼠标可以切换锁定目标。
 
-设置页面，主要包含两个类型的控件：单选设置项和拾键设置项。目前设置页面暂无实际功能。
+2. 设置页面，主要包含两个类型的控件：单选设置项和拾键设置项。目前设置页面暂无实际功能。
 
 
 ## 战斗系统实现原理
 
 ![战斗系统实现原理](images/principle.jpg)
+
+## 已知问题
+1. 敌人破体时，玩家角色出现异常转动。
+2. 敌人躯干值不为0时，躯干条也会消失。
+3. 玩家主动技能被打断后，有概率导致主动技能无法施放。
+
+## 注意事项
+此项目在Mac上编写，源文件编码为默认的utf-8，行尾默认为`LF`。若在Windows上编译需要使用git的自动修改行尾功能：
+`git config core.autocrlf`，配置好后使用git拉取时会自动将行尾修改为`CRLF`。
+然后使用下面的工具将Source和Plugins文件夹转换成`utf-8 with BOM`编码。  
+[编码转换工具](https://github.com/rexcape/code-transmit/blob/master/exe/codeTransmit.exe)

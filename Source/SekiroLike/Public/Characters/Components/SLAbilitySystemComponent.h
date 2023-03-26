@@ -28,13 +28,13 @@ public:
 	bool IsAbilityEnded(TSubclassOf<UGameplayAbility> AbilityClass) const
 	{
 		const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
-		return Result != nullptr ? (*Result) & 0b00000001 : false;
+		return Result != nullptr ? static_cast<bool>((*Result) & 0b00000001) : false;
 	}
 	/** 技能是否已取消 */
 	bool IsAbilityCancelled(TSubclassOf<UGameplayAbility> AbilityClass) const
 	{
 		const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
-		return Result != nullptr ? (*Result) & 0b00000010 : false;
+		return Result != nullptr ? static_cast<bool>((*Result) & 0b00000010) : false;
 	}
 
 	/** 添加到查询列表 */
