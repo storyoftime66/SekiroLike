@@ -72,5 +72,6 @@ Esc |   退出游戏
 ## 注意事项
 此项目在Mac上编写，源文件编码为默认的utf-8，行尾默认为`LF`。若在Windows上编译需要使用git的自动修改行尾功能：
 `git config core.autocrlf`，配置好后使用git拉取时会自动将行尾修改为`CRLF`。
-然后使用下面的工具将Source和Plugins文件夹转换成`utf-8 with BOM`编码。  
-[编码转换工具](https://github.com/rexcape/code-transmit/blob/master/exe/codeTransmit.exe)
+然后使用下面的工具将Source和Plugins文件夹转换成`utf-8 with BOM`编码。  [编码转换工具](https://github.com/rexcape/code-transmit/blob/master/exe/codeTransmit.exe)
+
+或可直接下载：[Windows项目文件](https://github.com/storyoftime66/SekiroLike/releases/tag/v0.1)

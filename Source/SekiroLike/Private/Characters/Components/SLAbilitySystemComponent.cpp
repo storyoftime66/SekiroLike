@@ -76,6 +76,7 @@ void USLAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 		}
 	}
 
+	// Note: 必须将基类调用放在最后，否则蓝图调用的ClearInputQueue()无法清除队列
 	Super::NotifyAbilityEnded(Handle, Ability, bWasCancelled);
 }
 
