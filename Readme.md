@@ -17,6 +17,7 @@ Esc |   退出游戏
 
 ![Screenshot_1](images/Screenshot_1.jpg)
 ![Screenshot_2](images/Screenshot_2.jpg)
+![Screenshot_3](images/Screenshot_3.png)
 
 ---
 
