@@ -24,6 +24,9 @@ APlayerCharacter::APlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Pawn
+	bUseControllerRotationYaw = false;
+
 	// 跟随弹簧臂和摄像机组件
 	FollowSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FollowSpringArm"));
 	FollowSpringArm->SetupAttachment(RootComponent);
@@ -36,8 +39,6 @@ APlayerCharacter::APlayerCharacter()
 
 	// 锁定组件
 	FocusComp = CreateDefaultSubobject<UPlayerFocusComp>(TEXT("FocusComp"));
-
-	SetGenericTeamId(1);
 }
 
 // Called when the game starts or when spawned
@@ -50,10 +51,14 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
+	// 更改ASC设置
 	if (ASC)
 	{
 		ASC->SetOwnerActor(GetPlayerState());
 	}
+
+	// 设置阵营，用于AI感知
+	SetGenericTeamId(1);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)

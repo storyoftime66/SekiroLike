@@ -121,7 +121,8 @@ public:
 	virtual bool IsDead() override { return IsCharacterDead; }
 
 protected:
-	/** 善后工作 */
+	/** 善后工作
+	 *  默认实现为设置胶囊体忽略Pawn碰撞， */
 	UFUNCTION(BlueprintNativeEvent, Category="SekiroLike|Character")
 	void Died(AActor* InInstigator);
 

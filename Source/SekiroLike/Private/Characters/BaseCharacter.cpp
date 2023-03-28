@@ -15,21 +15,26 @@
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer.SetDefaultSubobjectClass<USLCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	// Actor
 	PrimaryActorTick.bCanEverTick = true;
 
-	CharAS = CreateDefaultSubobject<UCharAttributeSet>(TEXT("CharAS"));
-	ASC = CreateDefaultSubobject<USLAbilitySystemComponent>(TEXT("ASC"));
+	// Pawn
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	// Character
 	if (GetMesh())
 	{
 		GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 		GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-		GetMesh()->SetCollisionObjectType(ECC_Pawn);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		GetMesh()->SetCollisionResponseToAllChannels(ECR_Block);
-		GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-		// Note: 需要的话则手动将武器检测设为Overlap
+		GetMesh()->SetCollisionProfileName(FName("SLCharacterMesh"));
 	}
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetCollisionProfileName(FName("SLCharacterCapsule"));
+	}
+
+	CharAS = CreateDefaultSubobject<UCharAttributeSet>(TEXT("CharAS"));
+	ASC = CreateDefaultSubobject<USLAbilitySystemComponent>(TEXT("ASC"));
 }
 
 void ABaseCharacter::ReactToHit(FName BoneName, FVector HitImpulse)
@@ -56,7 +61,6 @@ void ABaseCharacter::ReactToHitFinished()
 	if (GetMesh())
 	{
 		GetMesh()->SetAllBodiesSimulatePhysics(false);
-		// UE_LOG(LogTemp, Display, TEXT("ReactToHitFinished"));
 	}
 }
 

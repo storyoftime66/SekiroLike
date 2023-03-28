@@ -1,8 +1,8 @@
 # SekiroLike
 
-SekiroLike是一个仿照《只狼》战斗系统的动作游戏Demo。SekiroLike使用Unreal Engine 4.27制作，使用Gameplay Ability System插件实现主要功能。
+SekiroLike是一个仿照《只狼》战斗系统的动作游戏Demo。SekiroLike使用Unreal Engine 4.27制作，使用Gameplay Ability System插件实现主要游戏逻辑。
 
-[项目地址](https://gitee.com/storyoftime66/SekiroLike)
+[项目地址](https://github.com/storyoftime66/SekiroLike)
 
 按键 | 操作
 ---|---
@@ -67,7 +67,8 @@ Esc |   退出游戏
 ## 已知问题
 1. 敌人破体时，玩家角色出现异常转动。
 2. 敌人躯干值不为0时，躯干条也会消失。
-3. 玩家主动技能被打断后，有概率导致主动技能无法施放。
+3. 玩家主动技能被打断后，有概率导致主动技能无法施放。4
+4. 格挡技能配合技能连放机制会有问题，格挡技能不会自动取消。
 
 ## 注意事项
 此项目在Mac上编写，源文件编码为默认的utf-8，行尾默认为`LF`。若在Windows上编译需要使用git的自动修改行尾功能：
