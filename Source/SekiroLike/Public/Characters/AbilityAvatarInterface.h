@@ -34,11 +34,11 @@ class SEKIROLIKE_API IAbilityAvatarInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	///////////////////////////
 	/// 技能相关
 	///////////////////////////
+
 	/** 添加角色技能阶段tag（前摇、生效、后摇） */
 	virtual void AddAbilityStage(const FGameplayTag& AbilityStageTag)
 	{
@@ -53,6 +53,7 @@ public:
 	//////////////////
 	/// 动画相关
 	//////////////////
+
 	/** 获取角色移动时在前面的脚
 	 *  左脚在前时返回-1，双脚平行时返回0，右脚在前时返回1 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
@@ -71,7 +72,7 @@ public:
 	/** 获取物理动画组件，暂未使用 */
 	virtual UPhysicalAnimationComponent* GetPhysicalAnimationComponent() const { return nullptr; }
 
-	/** 对受击作出反应（播放物理动画） */
+	/** 对受击作出反应（比如播放物理动画） */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
 	virtual void ReactToHit(FName BoneName, FVector HitImpulse)
 	{
@@ -80,10 +81,14 @@ public:
 	///////////////////////////
 	/// 其他Gameplay逻辑
 	///////////////////////////
+
 	/** 告知角色已死亡
 	 *  @param Instigator 凶手 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
-	virtual void NotifyDied(AActor* Instigator) {}
+	virtual void NotifyDied(AActor* Instigator)
+	{
+	}
+
 	/** 角色是否已死亡 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|AbilityAvatarInterface")
 	virtual bool IsDead() { return false; }
@@ -91,7 +96,7 @@ public:
 
 
 /**
- * 设置角色的姿势类型
+ * 设置角色的姿势类型的通知状态
  */
 UCLASS()
 class SEKIROLIKE_API UAnimNotifyState_PostureType : public UAnimNotifyState

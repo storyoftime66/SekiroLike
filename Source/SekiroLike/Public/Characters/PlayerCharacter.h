@@ -21,9 +21,11 @@ class SEKIROLIKE_API APlayerCharacter : public ABaseCharacter
 	/** 跟随的弹簧臂 */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta=(AllowPrivateAccess="true"))
 	USpringArmComponent* FollowSpringArm;
+	
 	/** 跟随的相机 */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta=(AllowPrivateAccess="true"))
 	UCameraComponent* FollowCamera;
+	
 	/** 锁定组件 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UPlayerFocusComp* FocusComp;
@@ -71,8 +73,6 @@ protected:
 #pragma endregion
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
 

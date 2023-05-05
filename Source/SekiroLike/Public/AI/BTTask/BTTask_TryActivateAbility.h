@@ -30,11 +30,11 @@ protected:
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
 	bool NonBlock = false;
 	
-	/** 技能类 */
+	/** 施放技能的类 */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
 	TSubclassOf<class UGameplayAbility> AbilityClass;
 
-	/** 超时时间，单位：秒 */
+	/** 超时时间，超过这个时间技能仍未结束则任务失败。单位：秒 */
 	UPROPERTY(EditAnywhere, Category="SekiroLike|Ability")
 	float TimeOut = 10.0f;
 	

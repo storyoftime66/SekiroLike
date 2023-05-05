@@ -47,12 +47,14 @@ void UGameplayAbilityBase_ActiveAbility::GiveAbilityTo(TSubclassOf<UGameplayAbil
 
 	auto IA_Ability = AbilityDef->InputAction;
 	auto InputID = AbilityDef->InputId;
+
+	// 验证技能输入参数是否有效
 	if (IA_Ability == nullptr || IA_Ability->ValueType != EInputActionValueType::Boolean || AbilityDef->InputId == INDEX_NONE)
 	{
 		return;
 	}
 
-	// 绑定技能释放到输入
+	// 绑定技能输入到EnhancedInputComponent
 	auto TriggerEvent = AbilityDef->TriggerEvent;
 	if (TriggerEvent == ETriggerEvent::Started || TriggerEvent == ETriggerEvent::Triggered)
 	{

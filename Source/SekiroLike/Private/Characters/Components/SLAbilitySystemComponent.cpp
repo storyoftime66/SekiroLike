@@ -7,6 +7,26 @@
 #include "Characters/AbilityAvatarInterface.h"
 #include "Characters/MovementAgentInterface.h"
 
+bool USLAbilitySystemComponent::IsAbilityEnded(TSubclassOf<UGameplayAbility> AbilityClass) const
+{
+	const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
+	return Result != nullptr ? static_cast<bool>((*Result) & ABILITY_END_MASK) : false;
+}
+
+bool USLAbilitySystemComponent::IsAbilityCancelled(TSubclassOf<UGameplayAbility> AbilityClass) const
+{
+	const auto Result = SelfServiceQueryAbilityStates.Find(AbilityClass);
+	return Result != nullptr ? static_cast<bool>((*Result) & ABILITY_CANCEL_MASK) : false;
+}
+
+void USLAbilitySystemComponent::AddSelfServiceQueryAbility(TSubclassOf<UGameplayAbility> AbilityClass)
+{
+	if (IsValid(AbilityClass))
+	{
+		SelfServiceQueryAbilityStates.Add(TPair<TSubclassOf<UGameplayAbility>, uint8>(AbilityClass, 0x0));
+	}
+}
+
 void USLAbilitySystemComponent::ConsumeInputQueue()
 {
 	if (InputQueue.Num() != 0)
@@ -19,7 +39,7 @@ void USLAbilitySystemComponent::ConsumeInputQueue()
 void USLAbilitySystemComponent::NotifyAbilityFailed(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, const FGameplayTagContainer& FailureReason)
 {
 	// 技能激活失败时将技能加入队列
-	if (auto ActiveAbility = Cast<UGameplayAbilityBase_ActiveAbility>(Ability))
+	if (const auto ActiveAbility = Cast<UGameplayAbilityBase_ActiveAbility>(Ability))
 	{
 		if (ActiveAbility->InputId != INDEX_NONE)
 		{
@@ -37,12 +57,11 @@ void USLAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 {
 	const auto AbilityAvatar = GetAvatarActor();
 
-	// 指令队列逻辑
+	// 指令队列逻辑，队列中有技能、且无移动输入时会自动施放队列中的技能
 	if (InputQueue.Num() != 0)
 	{
 		if (auto MovementAgent = Cast<IMovementAgentInterface>(AbilityAvatar))
 		{
-			// 仅无移动输入时才自动释放队列中的技能
 			if (MovementAgent->GetWorldMovementIntent().IsNearlyZero())
 			{
 				AbilityAvatar->GetWorldTimerManager().SetTimerForNextTick(this, &USLAbilitySystemComponent::ConsumeInputQueue);
@@ -67,11 +86,11 @@ void USLAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 		{
 			if (bWasCancelled)
 			{
-				*Result |= 0b00000010;
+				*Result |= ABILITY_CANCEL_MASK;
 			}
 			else
 			{
-				*Result |= 0b00000001;
+				*Result |= ABILITY_END_MASK;
 			}
 		}
 	}
@@ -90,11 +109,11 @@ void USLAbilitySystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 绑定确认和取消的输入id
-	if (ConfirmInputId >= 0)
+	if (ConfirmInputId > INDEX_NONE)
 	{
 		GenericConfirmInputID = ConfirmInputId;
 	}
-	if (CancelInputId >= 0)
+	if (CancelInputId > INDEX_NONE)
 	{
 		GenericCancelInputID = CancelInputId;
 	}

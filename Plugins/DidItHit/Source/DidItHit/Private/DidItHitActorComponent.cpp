@@ -13,12 +13,6 @@ UDidItHitActorComponent::UDidItHitActorComponent()
 	TraceChannel = UEngineTypes::ConvertToTraceType(ECC_Visibility);
 }
 
-
-void UDidItHitActorComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void UDidItHitActorComponent::LineTraceAndHandleHit(const FVector& Start, const FVector& End)
 {
 	TArray<FHitResult> HitResults;
@@ -38,7 +32,7 @@ void UDidItHitActorComponent::LineTraceAndHandleHit(const FVector& Start, const 
 
 void UDidItHitActorComponent::UpdateLastKnownSocketLoc()
 {
-	check(StaticMeshComp);
+	check(StaticMeshComp.IsValid());
 
 	for (const auto& SocketName : SocketNames)
 	{
@@ -52,7 +46,7 @@ void UDidItHitActorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	if (bCanTrace)
 	{
-		check(IsValid(StaticMeshComp));
+		check(StaticMeshComp.IsValid());
 
 		if (bTraceSamePointAtDifferentTime)
 		{
@@ -137,13 +131,12 @@ void UDidItHitActorComponent::AddIgnoredActors(TArray<AActor*> InIgnoredActor)
 
 void UDidItHitActorComponent::ToggleTraceCheck(bool NewCanTrace)
 {
-	if (IsValid(StaticMeshComp) && SocketNames.Num() > 0)
+	if (StaticMeshComp.IsValid() && SocketNames.Num() > 0)
 	{
 		// 在检测开始时清理上次的检测数据
 		if (bCanTrace == false && NewCanTrace == true)
 		{
 			LastKnownSocketLocation.Empty();
-			TempIgnoredActors.Empty();
 			HitActors.Empty();
 			TempIgnoredActors.Append(IgnoredActors);
 		}

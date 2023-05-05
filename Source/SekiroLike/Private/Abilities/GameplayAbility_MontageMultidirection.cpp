@@ -80,7 +80,6 @@ void UGameplayAbility_MontageMultidirection::ActivateAbility(const FGameplayAbil
 
 	auto MontageToPlay = GetAbilityMontage();
 
-	// TODO: 在不同阶段给角色添加不同的tag
 	static FName MontageTaskName("PlayMontage_In_MontageMultidirection");
 	UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, MontageTaskName, MontageToPlay, 1.0f, NAME_None, false);
 	MontageTask->OnCancelled.AddDynamic(this, &UGameplayAbility_MontageMultidirection::EndAbilityPassively);

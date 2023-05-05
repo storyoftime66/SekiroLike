@@ -45,6 +45,8 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("APlayerCharacter::BeginPlay() called. %s"), *GetName());
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -63,13 +65,12 @@ void APlayerCharacter::PostInitializeComponents()
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
-	static FRotator RightRot(0.0f, 90.0f, 0.0f);
-
-	// TODO
 	static const FGameplayTag BackswingTag = SLAbilityTypes::GetAbilityStageTag(EAbilityStage::Backswing);
 
+	const float MagnitudeSq = Value.GetMagnitudeSq();
+	
 	// 移动输入取消技能后摇
-	if (Value.GetMagnitudeSq() > 0.0f && ASC && ASC->HasMatchingGameplayTag(BackswingTag))
+	if (MagnitudeSq > 0.0f && ASC && ASC->HasMatchingGameplayTag(BackswingTag))
 	{
 		UGameplayAbilityBase_ActiveAbility* ActiveAbility = Cast<UGameplayAbilityBase_ActiveAbility>(ASC->GetAnimatingAbility());
 		ASC->CurrentMontageStop();
@@ -80,13 +81,16 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 		}
 	}
 
+	// 更新移动输入
 	MovementInput.X = Value[0];
 	MovementInput.Y = Value[1];
 
-	if (Value.GetMagnitudeSq() > 0.0f)
+	if (MagnitudeSq > 0.0f)
 	{
 		const FVector ControlForward = FRotator(0.0f, GetControlRotation().Yaw, 0.0f).Vector();
 		AddMovementInput(ControlForward, Value[0]);
+
+		static FRotator RightRot(0.0f, 90.0f, 0.0f);
 		AddMovementInput(RightRot.RotateVector(ControlForward), Value[1]);
 	}
 }
@@ -105,19 +109,11 @@ void APlayerCharacter::Debug(const FInputActionValue& Value)
 	UE_LOG(LogTemp, Display, TEXT("[Debug] %f"), Value.GetMagnitude());
 }
 
-void APlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void APlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (FocusComp)
-	{
-		FocusComp->InitializeFocusComp(Cast<APlayerController>(NewController), GetCharacterMovement());
-	}
+	UE_LOG(LogTemp, Display, TEXT("APlayerCharacter::PossessedBy() called. Actor: %s, Controller: %s."), *GetNameSafe(this), *GetNameSafe(NewController));
 }
 
 void APlayerCharacter::UnPossessed()
@@ -139,6 +135,8 @@ void APlayerCharacter::UnPossessed()
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UE_LOG(LogTemp, Display, TEXT("APlayerCharacter::SetupPlayerInputComponent() called."));
 
 	// 添加操作-按键映射
 	ApplyInputMappingContext(IMC_Default, 0);

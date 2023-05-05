@@ -28,11 +28,9 @@ protected:
 	bool bIsTargeting = false;
 
 public:
-	// Sets default values for this actor's properties
 	AGameplayAbilityTargetActor_DidItHit();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	FGameplayAbilityTargetDataHandle MakeTargetData(FHitResult& HitResult);
@@ -46,7 +44,14 @@ public:
 	virtual void ConfirmTargetingAndContinue() override;
 	virtual bool IsConfirmTargetingAllowed() override;
 
-	/** 工具方法，创建TargetActor */
+	/** 工具方法，创建TargetActor
+	 * @param AbilityAvatar 技能的Avatar
+	 * @param TraceChannel 检测通道
+	 * @param bAttachToAvatar 是否连接到 AbilityAvatar 上，默认为是
+	 */
 	UFUNCTION(BlueprintCallable, Category="SekiroLike|TargetData")
-	static AGameplayAbilityTargetActor_DidItHit* MakeTargetActor_DidItHit(ACharacter* AbilityAvatar);
+	static AGameplayAbilityTargetActor_DidItHit* MakeTargetActor_DidItHit(
+		ACharacter* AbilityAvatar,
+		TEnumAsByte<ETraceTypeQuery> TraceChannel,
+		bool bAttachToAvatar = true);
 };

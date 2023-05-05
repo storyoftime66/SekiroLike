@@ -15,7 +15,8 @@
 
 
 /**
- * 角色属性集
+ * 角色属性集。
+ * 包括血量、躯干值、攻击力、防御力。
  */
 UCLASS()
 class SEKIROLIKE_API UCharAttributeSet : public UAttributeSet

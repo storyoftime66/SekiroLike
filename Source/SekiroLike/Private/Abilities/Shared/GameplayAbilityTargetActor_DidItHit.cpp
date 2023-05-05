@@ -55,7 +55,10 @@ bool AGameplayAbilityTargetActor_DidItHit::IsConfirmTargetingAllowed()
 	return bIsTargeting;
 }
 
-AGameplayAbilityTargetActor_DidItHit* AGameplayAbilityTargetActor_DidItHit::MakeTargetActor_DidItHit(ACharacter* AbilityAvatar)
+AGameplayAbilityTargetActor_DidItHit* AGameplayAbilityTargetActor_DidItHit::MakeTargetActor_DidItHit(
+	ACharacter* AbilityAvatar,
+	TEnumAsByte<ETraceTypeQuery> TraceChannel,
+	bool bAttachToAvatar/* = true */)
 {
 	if (!IsValid(AbilityAvatar))
 	{
@@ -67,9 +70,18 @@ AGameplayAbilityTargetActor_DidItHit* AGameplayAbilityTargetActor_DidItHit::Make
 	auto TargetActor = AbilityAvatar->GetWorld()->SpawnActor<AGameplayAbilityTargetActor_DidItHit>(AbilityAvatar->GetActorLocation(), FRotator::ZeroRotator);
 	if (TargetActor)
 	{
+		// 获取用于检测的 UStaticMeshComponent，通常是武器
+		// TODO: 改进获取武器的方式
 		TargetActor->DidItHitComp->SetupDitItHitComp(
 			Cast<UStaticMeshComponent>(AbilityAvatar->GetMesh()->GetChildComponent(0)));
 		TargetActor->DidItHitComp->OnHitActor.AddDynamic(TargetActor, &AGameplayAbilityTargetActor_DidItHit::OnHitActorHandler);
+		TargetActor->DidItHitComp->TraceChannel = TraceChannel;
+		TargetActor->DidItHitComp->AddIgnoredActor(AbilityAvatar);
+		
+		if (bAttachToAvatar)
+		{
+			TargetActor->AttachToActor(AbilityAvatar, FAttachmentTransformRules::KeepRelativeTransform);
+		}
 	}
 	return TargetActor;
 }

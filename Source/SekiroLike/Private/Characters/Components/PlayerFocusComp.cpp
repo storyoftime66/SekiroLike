@@ -18,47 +18,14 @@ UPlayerFocusComp::UPlayerFocusComp()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UPlayerFocusComp::InitializeFocusComp(APlayerController* InPC, UCharacterMovementComponent* InCharacterMovement)
-{
-	if (!IsValid(InPC) || !IsValid(InCharacterMovement))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PC or CharacterMovement is invalid, the focuscomp is not initialized."))
-		return;
-	}
-
-	CompOwnerPC = InPC;
-	DefaultControlInputScale = InPC->InputPitchScale;
-	CharacterMovement = InCharacterMovement;
-
-	// 获取CompOwner
-	UObject* CurrentObject = GetOuter();
-	while (CurrentObject)
-	{
-		AActor* Actor = Cast<AActor>(CurrentObject);
-		if (Actor)
-		{
-			CompOwner = Actor;
-			break;
-		}
-		CurrentObject = CurrentObject->GetOuter();
-	}
-
-	QueryParams = FCollisionQueryParams(FName("PlayerFocusAction"), SCENE_QUERY_STAT_ONLY(Focus), true);
-	QueryParams.bReturnPhysicalMaterial = false;
-	QueryParams.bReturnFaceIndex = false;
-	QueryParams.AddIgnoredActor(GetOwner());
-
-	bInitialized = IsValid(CompOwnerPC) && IsValid(CharacterMovement) && IsValid(CompOwner);
-}
-
 bool UPlayerFocusComp::IsFocused() const
 {
-	return IsValid(FocusedCharacter);
+	return FocusedCharacter.IsValid();
 }
 
 ACharacter* UPlayerFocusComp::GetFocusedCharacter() const
 {
-	return IsValid(FocusedCharacter) ? FocusedCharacter : nullptr;
+	return FocusedCharacter.Get();
 }
 
 void UPlayerFocusComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -67,37 +34,44 @@ void UPlayerFocusComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (bInitialized)
 	{
-		if (IsValid(FocusedCharacter))
+		if (FocusedCharacter.IsValid())
 		{
-			check(CompOwner);
-			check(CompOwnerPC);
-			check(CharacterMovement);
-
+			AActor* CompOwner = GetOwner();
 			// 旋转控制器（控制器带动摄像机）
 			if (CompOwner)
 			{
+				// 旋转角色朝向锁定目标
 				const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(CompOwner->GetActorLocation(), FocusedCharacter->GetActorLocation());
 				const FRotator ActorTargetRot(0.0f, LookAtRot.Yaw, 0.0f);
 				CompOwner->SetActorRotation(FMath::RInterpTo(CompOwner->GetActorRotation(), ActorTargetRot, DeltaTime, 10.0f));
-				if (CompOwnerPC)
+
+				if (CompOwnerPC.IsValid())
 				{
-					CompOwnerPC->InputPitchScale = CompOwnerPC->InputYawScale = 0.0f;
+					if (!bIgnoreLookInput)
+					{
+						CompOwnerPC->SetIgnoreLookInput(true);
+						bIgnoreLookInput = true;
+					}
+					
 					const FRotator ControlTargetRot(-15.0f, LookAtRot.Yaw, 0.0f);
 					CompOwnerPC->SetControlRotation(FMath::RInterpTo(CompOwnerPC->GetControlRotation(), ControlTargetRot, DeltaTime, 4.0f));
 				}
 			}
 
 			// 修改移动组件设置
-			if (CharacterMovement)
+			if (CharacterMovement.IsValid())
 			{
 				CharacterMovement->bOrientRotationToMovement = false;
 			}
 
 			// 距离过远则解除锁定
-			if (FVector::DistSquared(CompOwner->GetActorLocation(), FocusedCharacter->GetActorLocation()) > MaxDistanceSquare)
+			if (CompOwner)
 			{
-				SetFocusedCharacter(nullptr);
-				return;
+				if (FVector::DistSquared(CompOwner->GetActorLocation(), FocusedCharacter->GetActorLocation()) > MaxDistanceSquare)
+				{
+					SetFocusedCharacter(nullptr);
+					return;
+				}
 			}
 
 			// 角色死亡解除锁定
@@ -112,14 +86,15 @@ void UPlayerFocusComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 		else
 		{
-			FocusedCharacter = nullptr;
-			if (CharacterMovement)
+			FocusedCharacter.Reset();
+			if (CharacterMovement.IsValid())
 			{
 				CharacterMovement->bOrientRotationToMovement = true;
 			}
-			if (CompOwnerPC)
+			if (CompOwnerPC.IsValid() && bIgnoreLookInput)
 			{
-				CompOwnerPC->InputPitchScale = CompOwnerPC->InputYawScale = DefaultControlInputScale;
+				CompOwnerPC->SetIgnoreLookInput(false);
+				bIgnoreLookInput = false;
 			}
 		}
 	}
@@ -127,30 +102,35 @@ void UPlayerFocusComp::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UPlayerFocusComp::Focus()
 {
-	check(CompOwnerPC);
+	check(CompOwnerPC.IsValid());
 	if (!bInitialized)
 	{
 		return;
 	}
 
-	if (IsValid(FocusedCharacter))
+	if (FocusedCharacter.IsValid())
 	{
 		SetFocusedCharacter(nullptr);
 	}
 	else
 	{
 		// 检测并获取可以锁定的敌人
-		check(CompOwner && CompOwner->GetWorld());
+		check(GetOwner() && GetWorld());
 
 		FVector CamLoc;
 		FRotator CamRot;
 		CompOwnerPC->GetPlayerViewPoint(CamLoc, CamRot);
 		CamRot.Pitch = 0.0f;
 
-		FVector Start = CompOwner->GetActorLocation();
+		FVector Start = GetOwner()->GetActorLocation();
 		FVector End = Start + CamRot.Vector() * SweepDistance;
 
 		FHitResult OutHit;
+		FCollisionQueryParams QueryParams;
+		QueryParams = FCollisionQueryParams(FName("PlayerFocusAction"), SCENE_QUERY_STAT_ONLY(Focus), true);
+		QueryParams.bReturnPhysicalMaterial = false;
+		QueryParams.bReturnFaceIndex = false;
+		QueryParams.AddIgnoredActor(GetOwner());
 		const bool bHit = GetWorld()->SweepSingleByObjectType(
 			OutHit, Start, End, FQuat::Identity, FCollisionObjectQueryParams(FocusObject.GetValue()),
 			FCollisionShape::MakeSphere(400.0f), QueryParams);
@@ -163,7 +143,7 @@ void UPlayerFocusComp::Focus()
 
 void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 {
-	check(CompOwner && CompOwner->GetWorld());
+	check(GetOwner() && GetWorld());
 
 	if (!IsFocused())
 	{
@@ -181,7 +161,7 @@ void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 	FRotator CamRot;
 	CompOwnerPC->GetPlayerViewPoint(CamLoc, CamRot);
 	CamRot.Pitch = 0.0f;
-	FVector Start = CompOwner->GetActorLocation();
+	FVector Start = GetOwner()->GetActorLocation();
 	FVector OriginalDirVector = CamRot.Vector() * SweepDistance;
 	for (float SweepAngle = 0.0f; SweepAngle <= SwitchSweepAngle; SweepAngle += 15.0f)
 	{
@@ -196,9 +176,9 @@ void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 				if (NewFocusedCharacter && NewFocusedCharacter != FocusedCharacter)
 				{
 					// 判断找到的新目标是否和旋转方向一致
-					FVector V1 = NewFocusedCharacter->GetActorLocation() - CompOwner->GetActorLocation();
+					FVector V1 = NewFocusedCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
 					V1.Z = 0.0f;
-					FVector V2 = FocusedCharacter->GetActorLocation() - CompOwner->GetActorLocation();
+					FVector V2 = FocusedCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
 					V2.Z = 0.0f;
 					// Note: 由于虚幻用左手系，所以用的左手螺旋定则
 					if (FMath::Sign(FVector::CrossProduct(V2, V1).Z) == Direction)
@@ -214,12 +194,38 @@ void UPlayerFocusComp::SwitchTarget(const FInputActionValue& Value)
 
 bool UPlayerFocusComp::SphereSweepMulti(TArray<FHitResult>& OutHits, FVector Start, FVector DirVector) const
 {
-	check(CompOwner && CompOwner->GetWorld());
+	check(GetOwner() && GetWorld());
+
+	FCollisionQueryParams QueryParams;
+	QueryParams = FCollisionQueryParams(FName("PlayerFocusAction"), SCENE_QUERY_STAT_ONLY(Focus), true);
+	QueryParams.bReturnPhysicalMaterial = false;
+	QueryParams.bReturnFaceIndex = false;
+	QueryParams.AddIgnoredActor(GetOwner());
 	const bool bHit = GetWorld()->SweepMultiByObjectType(
 		OutHits, Start, Start + DirVector, FQuat::Identity, FCollisionObjectQueryParams(FocusObject.GetValue()),
 		FCollisionShape::MakeSphere(400.0f), QueryParams);
-	// DrawDebugCylinder(CompOwner->GetWorld(), Start, Start + DirVector, 400.0f, 12, FColor::Red, true, 10.0f, 0, 4.0f);
 	return bHit;
+}
+
+void UPlayerFocusComp::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Display, TEXT("UPlayerFocusComp::BeginPlay() called."))
+
+	// 初始化
+	const ACharacter* CompOwner = Cast<ACharacter>(GetOwner());
+	if (IsValid(CompOwner))
+	{
+		CompOwnerPC = CompOwner->GetController<APlayerController>();
+		CharacterMovement = CompOwner->GetCharacterMovement();
+		bInitialized = CompOwnerPC.IsValid() && CharacterMovement.IsValid();
+	}
+
+	if (!bInitialized)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PC or CharacterMovement is invalid, the focuscomp is not initialized."))
+	}
 }
 
 void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
@@ -227,7 +233,7 @@ void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
 	if (IsValid(ReticleClass))
 	{
 		// 移除原来的reticle并添加新的reticle
-		if (IsValid(FocusedCharacter) && IsValid(ReticleWidgetComp))
+		if (FocusedCharacter.IsValid() && IsValid(ReticleWidgetComp))
 		{
 			ReticleWidgetComp->DestroyComponent();
 			ReticleWidgetComp = nullptr;
@@ -237,7 +243,7 @@ void UPlayerFocusComp::SetFocusedCharacter(ACharacter* NewCharacter)
 			ReticleWidgetComp = NewObject<UWidgetComponent>(NewCharacter, UWidgetComponent::StaticClass());
 			ReticleWidgetComp->RegisterComponent();
 			ReticleWidgetComp->AttachToComponent(NewCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-			auto ReticleWidget = CreateWidget(CompOwnerPC, ReticleClass);
+			auto ReticleWidget = CreateWidget(CompOwnerPC.Get(), ReticleClass);
 			ReticleWidgetComp->SetWidget(ReticleWidget);
 			ReticleWidgetComp->SetCollisionProfileName("NoCollision");
 			ReticleWidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
