@@ -4,6 +4,9 @@ SekiroLike是一个仿照《只狼》战斗系统的动作游戏Demo。SekiroLik
 
 [项目地址](https://github.com/storyoftime66/SekiroLike)
 
+项目中使用到的其他资源：
+  - 角色动画 [GhostSamurai_Katana](https://www.unrealengine.com/marketplace/zh-CN/product/ghostsamurai-katana)
+
 按键 | 操作
 ---|---
 W、A、S、D  |   角色移动

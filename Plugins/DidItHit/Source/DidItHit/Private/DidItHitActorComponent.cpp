@@ -137,6 +137,7 @@ void UDidItHitActorComponent::ToggleTraceCheck(bool NewCanTrace)
 		if (bCanTrace == false && NewCanTrace == true)
 		{
 			LastKnownSocketLocation.Empty();
+			TempIgnoredActors.Empty();
 			HitActors.Empty();
 			TempIgnoredActors.Append(IgnoredActors);
 		}
