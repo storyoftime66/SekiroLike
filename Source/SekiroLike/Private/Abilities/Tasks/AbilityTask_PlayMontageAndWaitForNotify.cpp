@@ -16,7 +16,7 @@ void UAbilityTask_PlayMontageAndWaitForNotify::Activate()
 
 	bool bPlayedMontage = false;
 
-	if (AbilitySystemComponent)
+	if (AbilitySystemComponent.IsValid())
 	{
 		if (AbilitySystemComponent->PlayMontage(Ability, Ability->GetCurrentActivationInfo(), Montage, 1.0f, NAME_None, 0.0f) > 0.f)
 		{
@@ -38,13 +38,13 @@ void UAbilityTask_PlayMontageAndWaitForNotify::Activate()
 	}
 	else
 	{
-		ABILITY_LOG(Warning, TEXT("UAbilityTask_PlayMontageAndWaitForNotify called on invalid AbilitySystemComponent"));
+		UE_LOG(LogTemp, Warning, TEXT("UAbilityTask_PlayMontageAndWaitForNotify called on invalid AbilitySystemComponent"));
 	}
 
 	/** 播放失败，取消任务 */
 	if (!bPlayedMontage)
 	{
-		ABILITY_LOG(Warning, TEXT("UAbilityTask_PlayMontageAndWaitForNotify called in Ability %s failed to play montage %s; Task Instance Name %s."), *Ability->GetName(), *GetNameSafe(Montage), *InstanceName.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("UAbilityTask_PlayMontageAndWaitForNotify called in Ability %s failed to play montage %s; Task Instance Name %s."), *Ability->GetName(), *GetNameSafe(Montage), *InstanceName.ToString());
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
 			OnCancelled.Broadcast(NAME_None, FAnimNotifyEvent());
@@ -115,7 +115,7 @@ bool UAbilityTask_PlayMontageAndWaitForNotify::StopPlayingMontage()
 
 	// Check if the montage is still playing
 	// The ability would have been interrupted, in which case we should automatically stop the montage
-	if (AbilitySystemComponent && Ability)
+	if (AbilitySystemComponent.IsValid() && Ability)
 	{
 		if (AbilitySystemComponent->GetAnimatingAbility() == Ability
 			&& AbilitySystemComponent->GetCurrentMontage() == Montage)

@@ -59,31 +59,31 @@ protected:
 	/// 可配置参数
 
 	/** 检测距离，默认10米 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus")
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus")
 	float SweepDistance = 1500.0f;
 
 	/** 最远保持锁定的距离的平方，默认25米 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus")
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus")
 	float MaxDistanceSquare = 6250000.0f;
 
 	/** 锁定目标的类型 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus")
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus")
 	TEnumAsByte<ECollisionChannel> FocusObject = ECC_Pawn;
 
 	/** 输入操作：锁定 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus")
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus")
 	UInputAction* IA_Focus;
 
 	/** 输入操作：切换锁定目标 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus")
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus")
 	UInputAction* IA_SwitchTarget;
 
 	/** 切换目标时扫描的最大角度，单位度 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus", AdvancedDisplay, meta=(ClampMax="90.0", ClampMin="0.0"))
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus", AdvancedDisplay, meta=(ClampMax="90.0", ClampMin="0.0"))
 	float SwitchSweepAngle = 30.0f;
 
 	/** 瞄准时的标识UI类 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SekiroLike|Focus", AdvancedDisplay)
+	UPROPERTY(EditAnywhere, Category="SekiroLike|Focus", AdvancedDisplay)
 	TSubclassOf<UUserWidget> ReticleClass;
 
 	/** 设置新的锁定目标 */
@@ -93,9 +93,11 @@ public:
 	UPlayerFocusComp();
 
 	/** 当前是否锁定到敌人身上 */
+	UFUNCTION(BlueprintCallable, Category = "SekiroLike|Focus")
 	bool IsFocused() const;
 	
 	/** 获取锁定的角色 */
+	UFUNCTION(BlueprintCallable, Category = "SekiroLike|Focus")
 	ACharacter* GetFocusedCharacter() const;
 
 	/** 获取锁定IA */

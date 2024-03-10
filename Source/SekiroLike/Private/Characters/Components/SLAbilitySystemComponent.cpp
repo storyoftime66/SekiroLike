@@ -123,7 +123,7 @@ FGameplayAbilitySpecHandle USLAbilitySystemComponent::GiveDisposableAbility(TSub
 {
 	if (!IsValid(AbilityClass))
 	{
-		ABILITY_LOG(Warning, TEXT("GiveDisposableAbility called on invalid AbilityClass"));
+		UE_LOG(LogTemp, Warning, TEXT("GiveDisposableAbility called on invalid AbilityClass"));
 		return FGameplayAbilitySpecHandle();
 	}
 
@@ -149,14 +149,14 @@ FGameplayAbilitySpecHandle USLAbilitySystemComponent::GiveDisposableAbility(TSub
 
 	if (Spec.Ability->GetInstancingPolicy() == EGameplayAbilityInstancingPolicy::NonInstanced || Spec.Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalOnly)
 	{
-		ABILITY_LOG(Error, TEXT("GiveDisposableAbility called on ability %s that is non instanced or won't execute on server, not allowed!"), *Spec.Ability->GetName());
+		UE_LOG(LogTemp, Error, TEXT("GiveDisposableAbility called on ability %s that is non instanced or won't execute on server, not allowed!"), *Spec.Ability->GetName());
 
 		return FGameplayAbilitySpecHandle();
 	}
 
 	if (!IsOwnerActorAuthoritative())
 	{
-		ABILITY_LOG(Error, TEXT("GiveDisposableAbility called on ability %s on the client, not allowed!"), *Spec.Ability->GetName());
+		UE_LOG(LogTemp, Error, TEXT("GiveDisposableAbility called on ability %s on the client, not allowed!"), *Spec.Ability->GetName());
 
 		return FGameplayAbilitySpecHandle();
 	}

@@ -16,7 +16,7 @@ float USLBlueprintFunctionLibrary::GetTagSetByCallerMagnitude(FGameplayEffectSpe
 	}
 	else
 	{
-		ABILITY_LOG(Warning, TEXT("USLBlueprintFunctionLibrary::GetTagSetByCallerMagnitude called with invalid SpecHandle"));
+		UE_LOG(LogTemp, Warning, TEXT("USLBlueprintFunctionLibrary::GetTagSetByCallerMagnitude called with invalid SpecHandle"));
 	}
 
 	return 0.0f;
@@ -68,7 +68,7 @@ void USLBlueprintFunctionLibrary::RemoveAssetTag(FGameplayEffectSpecHandle SpecH
 	}
 	else
 	{
-		ABILITY_LOG(Warning, TEXT("UAbilitySystemBlueprintLibrary::RemoveAssetTag called with invalid SpecHandle"));
+		UE_LOG(LogTemp, Warning, TEXT("UAbilitySystemBlueprintLibrary::RemoveAssetTag called with invalid SpecHandle"));
 	}
 }
 

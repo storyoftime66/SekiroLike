@@ -1,10 +1,11 @@
-Binaries
-Build
+Binaries/
+Build/
 DerivedDataCache
-Intermediate
-Saved
-.vscode
-.vs
+Intermediate/
+Saved/
+.vscode/
+.vs/
+.vsconig/
 .idea
 *.VC.db
 *.opensdf
@@ -14,3 +15,4 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+*_BuiltData.uasset
