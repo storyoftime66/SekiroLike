@@ -64,7 +64,7 @@ void UAbilityTask_WaitTargetDataUsingActor::Activate()
 {
 	if (TargetActor)
 	{
-		if (IsPendingKill())
+		if (IsValid(this))
 		{
 			return;
 		}

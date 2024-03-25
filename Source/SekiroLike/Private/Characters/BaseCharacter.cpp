@@ -9,6 +9,7 @@
 #include "Characters/Components/SLCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/GameFrameworkComponentManager.h"
 
 
 // Sets default values
@@ -35,6 +36,25 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer):
 
 	CharAS = CreateDefaultSubobject<UCharAttributeSet>(TEXT("CharAS"));
 	ASC = CreateDefaultSubobject<USLAbilitySystemComponent>(TEXT("ASC"));
+}
+
+
+void ABaseCharacter::PreInitializeComponents() {
+	Super::PreInitializeComponents();
+
+	UGameFrameworkComponentManager::AddGameFrameworkComponentReceiver(this);
+}
+
+void ABaseCharacter::BeginPlay() {
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, UGameFrameworkComponentManager::NAME_GameActorReady);
+	
+	Super::BeginPlay();
+}
+
+void ABaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	UGameFrameworkComponentManager::RemoveGameFrameworkComponentReceiver(this);
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ABaseCharacter::ReactToHit(FName BoneName, FVector HitImpulse)

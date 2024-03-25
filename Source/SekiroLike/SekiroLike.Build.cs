@@ -14,12 +14,6 @@ public class SekiroLike : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"InputCore",
-			"GameplayAbilities",
-			"EnhancedInput",
-			"GameplayTags",
-			"Json",
-			"JsonUtilities",
-			"UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
@@ -28,7 +22,9 @@ public class SekiroLike : ModuleRules
 			"EnhancedInput",
 			"GameplayTags",
 			"GameplayTasks",
-			"Json",
+            "ModularGameplay",
+            "GameFeatures",
+            "Json",
 			"JsonUtilities",
 			"DidItHit",
 			"UMG"

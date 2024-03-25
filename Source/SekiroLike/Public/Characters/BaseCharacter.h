@@ -58,6 +58,12 @@ public:
 	//~ IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ASC; }
 
+	//~ Begin AActor Interface
+	virtual void PreInitializeComponents() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	//~ End AActor Interface
+
 	////////////////////////////////////////////////////////////
 	/// MovementAgent
 	////////////////////////////////////////////////////////////

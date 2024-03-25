@@ -155,18 +155,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		}
 
-		// 锁定功能
-		if (FocusComp)
-		{
-			if (FocusComp->GetFocusAction())
-			{
-				EnhancedInputComponent->BindAction(FocusComp->GetFocusAction(), ETriggerEvent::Started, FocusComp, &UPlayerFocusComp::Focus);
-			}
-			if (FocusComp->GetSwitchTargetAction())
-			{
-				EnhancedInputComponent->BindAction(FocusComp->GetSwitchTargetAction(), ETriggerEvent::Started, FocusComp, &UPlayerFocusComp::SwitchTarget);
-			}
-		}
+		// 锁定敌人功能
+		FocusComp->BindInput(EnhancedInputComponent);
 	}
 
 	// 绑定技能和输入操作
